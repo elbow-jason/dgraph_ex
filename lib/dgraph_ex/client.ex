@@ -5,14 +5,6 @@ defmodule DgraphEx.Client do
   @host Application.get_env(:dgraph_ex, :host, "localhost")
   @port Application.get_env(:dgraph_ex, :port, 8080)
 
-  if is_nil(@host) do
-    raise %CompileError{
-      description: "DgraphEx config requires a :host"
-    }
-  end
-
-  use Slogger, level: Application.get_env(:dgraph_ex, :log_level, :debug)
-
   @url %URI{
     scheme: @scheme,
     host:   @host,
@@ -22,16 +14,14 @@ defmodule DgraphEx.Client do
 
   def send(q, headers \\ [], opts \\ [])
   def send(q, headers, opts) when is_binary(q) do
-    Slogger.debug("DgraphEx => querying #{@url} with => \n#{q}")
     case HTTPoison.post(@url, q, headers, opts) do
       {:ok, %{status_code: 200, body: body}} ->
-        Poison.decode(body)
+        handle_response(body)
       {:ok, resp} ->
         {:error, resp}
-      {:error, _} = err -> 
+      {:error, _} = err ->
         err
       err ->
-        Slogger.error("Dgraph.Client Error. Got: #{inspect err}")
         {:error, err}
     end
   end
@@ -47,5 +37,26 @@ defmodule DgraphEx.Client do
     end
   end
 
+  def handle_response(body) when is_binary(body) do
+    case Poison.decode(body) do
+      {:ok, json} -> handle_response(json)
+      err -> err
+    end
+  end
+  def handle_response(%{"errors" => _} = err) do
+    {:error, err}
+  end
+  def handle_response(%{"data" => _} = data) do
+    data
+  end
+  def handle_response(%{"code" => "Success"} = json) do
+    {:ok, json}
+  end
+  def handle_response(%{"code" => _, "message" => _} = err) do
+    {:error, err}
+  end
+  def handle_response(ok) do
+    {:ok, ok}
+  end
 
 end

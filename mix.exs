@@ -35,7 +35,6 @@ defmodule DgraphEx.Mixfile do
   defp deps do
     [
       {:httpoison, "~> 0.12.0"},
-      {:slogger, "~> 0.1.6"},
       {:poison, "~> 3.1"},
     ]
   end

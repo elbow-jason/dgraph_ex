@@ -3,13 +3,13 @@ defmodule DgraphEx.Template do
 
   defstruct [:query, :variables]
 
-  def prepare(vars, query) when is_map(vars) do
+  def prepare(query, vars) when is_map(vars) do
     vars
     |> Enum.into([])
     |> Enum.map(fn {name, {value, type}} -> {name, value, type} end)
     |> prepare(query)
   end
-  def prepare(vars, query) when is_list(vars) and is_binary(query) do
+  def prepare(query, vars) when is_list(vars) and is_binary(query) do
     vars =
       vars
       |> Enum.map(fn {name, value, type} -> {name |> dollarify, to_string(value), to_string(type)} end)
@@ -19,7 +19,7 @@ defmodule DgraphEx.Template do
       |> Enum.join(", ")
     var_map =
       vars
-      |> Enum.map(fn {name, value, type} -> {name, value} end)
+      |> Enum.map(fn {name, value, _type} -> {name, value} end)
       |> Enum.into(%{})
     %Template{
       query: "query me(" <> args <> ")" <> query,

@@ -1,3 +1,1 @@
-# require DgraphEx.Query
-# import  DgraphEx.Query
-# import DgraphEx.Client
+c("examples/person.exs")
