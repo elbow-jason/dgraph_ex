@@ -49,4 +49,8 @@ defmodule DgraphEx.ExprTest do
   test "render lt" do
     assert lt(:age, 100) |> Expr.Lt.render == "lt(age, 100)"
   end
+
+  test "render le" do
+    assert le(:age, 100) |> Expr.Le.render == "le(age, 100)"
+  end
 end

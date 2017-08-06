@@ -1,37 +1,30 @@
 defmodule DgraphEx.Expr.Neq do
+
+  defmacro define_funcs(module, name) do
+    quote do
+      def unquote(name)(label, value) do
+        unquote(name)(label, value, DgraphEx.Util.infer_type(value))
+      end
+      def unquote(name)(label, value, type) when is_atom(label) or is_map(label) do
+        %unquote(module){
+          label:  label,
+          value:  value,
+          type:   type,
+        }
+      end
+    end
+  end
+
   defmacro __using__(name) do
     quote do
       alias DgraphEx.Expr.{Val, Count}
       alias DgraphEx.Util
-
-      @name unquote(name)
 
       defstruct [
         label: nil,
         value: nil,
         type: nil,
       ]
-
-      def __using_quoted__(name \\ @name) do
-        quote do
-          def unquote(name)(label, value) do
-            unquote(name)(label, value, Util.infer_type(value))
-          end
-          def unquote(name)(label, value, type) when is_atom(label) or is_map(label) do
-            %DgraphEx.Expr.Lt{
-              label:  label,
-              value:  value,
-              type:   type,
-            }
-          end
-        end
-      end
-
-      defmacro __using__(_) do
-        quote do
-          unquote( __MODULE__.__using_quoted__() )
-        end
-      end
 
       @doc """
 
