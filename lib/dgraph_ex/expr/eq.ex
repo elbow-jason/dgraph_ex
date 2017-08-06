@@ -10,7 +10,7 @@ defmodule DgraphEx.Expr.Eq do
 
   defmacro __using__(_) do
     quote do
-      def eq(label, value, type) when is_atom(label) do
+      def eq(label, value, type) when is_atom(label) or is_map(label) do
         %DgraphEx.Expr.Eq{
           label:  label,
           value:  value,
@@ -20,10 +20,22 @@ defmodule DgraphEx.Expr.Eq do
     end
   end
 
-
-  def render(%Eq{label: label, value: value, type: type}) when is_atom(label) and is_atom(type) do
+  def render(%Eq{label: %{__struct__: module} = model, value: value, type: type}) do
     {:ok, literal_value} = Util.as_literal(value, type)
-    "eq("<>Util.as_rendered(label)<>", "<>literal_value<>")"
+    model
+    |> module.render
+    |> do_render(literal_value)
+  end
+
+  def render(%Eq{label: label, value: value, type: type}) when is_atom(label) do
+    {:ok, literal_value} = Util.as_literal(value, type)
+    label
+    |> Util.as_rendered
+    |> do_render(literal_value)
+  end
+
+  defp do_render(label, value) do
+    "eq(#{label}, #{value})"
   end
 
 end

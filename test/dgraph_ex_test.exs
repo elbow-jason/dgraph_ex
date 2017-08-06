@@ -101,4 +101,15 @@ defmodule DgraphExTest do
     assert result == "{\nperson(func: uid(0x9)) {\naddress\nname\n} }"
   end
 
+  test "render function eq with embedded count expr" do
+    result =
+      query()
+      |> func(:ten_friends, eq(count(:friend), 10, :int), [
+        :name,
+      ])
+      |> render
+      |> TestHelper.only_spaces
+    assert result == "{\nten_friends(func: eq(count(friend), 10)) {\nname\n} }"
+  end
+
 end
