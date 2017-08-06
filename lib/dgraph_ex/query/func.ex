@@ -1,6 +1,7 @@
 defmodule DgraphEx.Query.Func do
   alias DgraphEx.{Field}
   alias DgraphEx.Query.{Func}
+  alias DgraphEx.Expr.{Uid}
 
   defstruct [
     name:   nil,
@@ -15,12 +16,14 @@ defmodule DgraphEx.Query.Func do
         q
         |> Query.put_sequence(%Query.Func{
           name:   name,
-          expr:   expr,
+          expr:   Query.Func.prepare_expr(expr),
           block:  block,
         })
       end
     end
   end
+
+  
 
   def render(%Func{} = f) do
     "#{f.name}(func: #{render_expr(f)}) {\n" <> render_block(f) <> "\n}\n"
@@ -35,17 +38,13 @@ defmodule DgraphEx.Query.Func do
   defp render_expr(%Func{expr: %{__struct__: module} = model}) do
     module.render(model)
   end
-  # defp render_expr(expr_args) when is_tuple(expr_args) do
-  #   expr_args
-  #   |> Tuple.to_list
-  #   |> render_expr
-  # end
 
-  # defp join_args(args) when is_list(args) do
-  #   args
-  #   |> Enum.map(&interpolate/1)
-  #   |> Enum.join(", ")
-  # end
+  def prepare_expr(expr) do
+    case expr do
+      %Uid{} -> expr |> Uid.as_expression
+      _ -> expr
+    end
+  end
 
   defp interpolate(item) do
     case item do

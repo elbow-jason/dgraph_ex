@@ -33,6 +33,10 @@ defmodule DgraphEx.Expr.Uid do
     }
   end
 
+  @doc """
+  This function is used by Func to ensure that a uid string ("0x9") is rendered
+  as an expression literal `uid(0x9)` instead of an actual literal `<0x9>`
+  """
   def as_expression(%Uid{} = u) do
     %{ u | type: :expression }
   end
