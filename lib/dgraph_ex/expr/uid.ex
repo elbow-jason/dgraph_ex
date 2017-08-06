@@ -1,6 +1,18 @@
 defmodule DgraphEx.Expr.Uid do
+  @moduledoc """
+  https://docs.dgraph.io/query-language/#uid
+
+  Syntax Examples:
+
+    q(func: uid(<uid>))
+    predicate @filter(uid(<uid1>, ..., <uidn>))
+    predicate @filter(uid(a)) for variable a
+    q(func: uid(a,b)) for variables a and b
+
+  """
   alias DgraphEx.Expr.Uid
   alias DgraphEx.Util
+
 
   defstruct [
     :value,
@@ -9,7 +21,7 @@ defmodule DgraphEx.Expr.Uid do
 
   defmacro __using__(_) do
     quote do
-      def uid(value) when is_atom(value) or is_binary(value) do
+      def uid(value) do
         DgraphEx.Expr.Uid.new(value)
       end
     end
@@ -20,13 +32,20 @@ defmodule DgraphEx.Expr.Uid do
     :expression,
   ]
 
-  def new(value) do
-    case value do
-      x when is_atom(x)   -> new(x, :expression)
-      x when is_binary(x) -> new(x, :literal)
-    end
+  def new(value) when is_binary(value) do
+    new(value, :literal)
   end
-  def new(value, type) when (is_atom(value) or is_binary(value)) and type in @types do
+  def new(value) when is_atom(value) do
+    new(value, :expression)
+  end
+  def new(uids) when is_list(uids) do
+    # lists of uid literals are rendered inside a `uid(<uids_here>)` function (as in @filter)
+    # lists of uid variables are rendered inside a `uid(<uids_here>)` function (as in @filter)
+    # therefore any list is an uid expression
+    new(uids, :expression)
+  end
+
+  def new(value, type) when (is_atom(value) or is_binary(value) or is_list(value)) and type in @types do
     %Uid{
       value: value,
       type: type,
@@ -46,10 +65,18 @@ defmodule DgraphEx.Expr.Uid do
   end
 
   def render(%Uid{value: value, type: :literal}) when is_binary(value) do
-    Util.as_literal(value, :uid)
+    {:ok, uid_literal} = Util.as_literal(value, :uid)
+    uid_literal
   end
   def render(%Uid{value: value, type: :expression}) do
-    "uid("<>to_string(value)<>")"
+    render_expression([value])
+  end
+  defp render_expression(uids) when is_list(uids) do
+    args =
+      uids
+      |> Enum.map(&to_string/1)
+      |> Enum.join(", ")
+    "uid("<>args<>")"
   end
 
 end

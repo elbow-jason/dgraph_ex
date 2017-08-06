@@ -1,6 +1,7 @@
 defmodule DgraphEx.Query.Filter do
-  alias DgraphEx.{Query, Field}
+  alias DgraphEx.{Query}
   alias Query.{Filter, Block}
+  alias DgraphEx.Expr.Uid
 
   defstruct [
     expr: nil,
@@ -22,20 +23,20 @@ defmodule DgraphEx.Query.Filter do
 
   def new(%{__struct__: _} = expr, block) do
     %Filter{
-      expr:   expr,
+      expr:   prepare_expr(expr),
       block:  block,
     }
   end
 
   def filter_1(%{__struct__: _} = expr) do
     %Filter{
-      expr:   expr,
+      expr:   prepare_expr(expr),
       block:  {},
     }
   end
   def filter_2(%{__struct__: _} = expr, block) when is_tuple(block) do
     %Filter{
-      expr:   expr,
+      expr:   prepare_expr(expr),
       block:  block,
     }
   end
@@ -58,21 +59,11 @@ defmodule DgraphEx.Query.Filter do
     Block.render(block)
   end
 
-  defp interpolate(item) do
-    case item do
-      %{__struct__: module} = model ->
-        module.render(model)
-      {key, value} when is_atom(key) and is_atom(value) ->
-        "#{key}: #{value}"
-      {key, %{__struct__: module} = model} when is_atom(key) ->
-        "#{key}: "<>module.render(model)
-      x when is_binary(x) -> 
-        x
-        |> Field.stringify
-        |> Field.wrap_quotes
-      x ->
-        x
-        |> Field.stringify
+  def prepare_expr(expr) do
+    case expr do
+      %Uid{} -> expr |> Uid.as_expression
+      _ -> expr
     end
   end
+
 end

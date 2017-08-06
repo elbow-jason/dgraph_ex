@@ -1,4 +1,4 @@
-defmodule DgraphEx.ExprEqTest do
+defmodule DgraphEx.EqTest do
 
   use ExUnit.Case
   doctest DgraphEx.Expr.Eq

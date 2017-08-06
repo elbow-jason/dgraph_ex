@@ -1,4 +1,4 @@
-defmodule DgraphEx.QueryFilterTest do
+defmodule DgraphEx.FilterTest do
   use ExUnit.Case
   doctest DgraphEx.Query.Filter
 

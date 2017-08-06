@@ -1,5 +1,5 @@
 defmodule DgraphEx.Query.Func do
-  alias DgraphEx.{Field, Query, Expr}
+  alias DgraphEx.{Query, Expr}
   alias Query.{Func, Block}
   alias Expr.{Uid}
 
@@ -39,7 +39,7 @@ defmodule DgraphEx.Query.Func do
   def func_3(name, %{__struct__: _} = expr, block) when is_tuple(block) do
     %Query.Func{
       name:   name,
-      expr:   Query.Func.prepare_expr(expr),
+      expr:   prepare_expr(expr),
       block:  block,
     }
   end
@@ -66,21 +66,4 @@ defmodule DgraphEx.Query.Func do
     end
   end
 
-  defp interpolate(item) do
-    case item do
-      %{__struct__: module} = model ->
-        module.render(model)
-      {key, value} when is_atom(key) and is_atom(value) ->
-        "#{key}: #{value}"
-      {key, %{__struct__: module} = model} when is_atom(key) ->
-        "#{key}: "<>module.render(model)
-      x when is_binary(x) -> 
-        x
-        |> Field.stringify
-        |> Field.wrap_quotes
-      x ->
-        x
-        |> Field.stringify
-    end
-  end
 end

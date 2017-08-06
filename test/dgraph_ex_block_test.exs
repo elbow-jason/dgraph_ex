@@ -1,4 +1,4 @@
-defmodule DgraphEx.QueryBlockTest do
+defmodule DgraphEx.BlockTest do
   use ExUnit.Case
   doctest DgraphEx.Query.Block
 

@@ -11,7 +11,7 @@ defmodule DgraphEx.ExprTest do
   end
 
   test "render uid as literal" do
-    assert uid("0x123") |> Expr.Uid.render == {:ok, "<0x123>"}
+    assert uid("0x123") |> Expr.Uid.render == "<0x123>"
   end
 
   test "render uid as label" do
