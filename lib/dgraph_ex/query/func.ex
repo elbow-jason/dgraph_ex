@@ -12,7 +12,7 @@ defmodule DgraphEx.Query.Func do
   defmacro __using__(_) do
     quote do
       alias DgraphEx.Query
-      def func(%Query{} = q, name, expr, block) do
+      def func(%Query{} = q, name, expr, block \\ []) do
         q
         |> Query.put_sequence(%Query.Func{
           name:   name,

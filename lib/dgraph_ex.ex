@@ -15,6 +15,7 @@ defmodule DgraphEx do
   use Query.As
   use Query.MutationSet
   use Query.Func
+  use Query.Filter
 
 end
   # Mutation,
