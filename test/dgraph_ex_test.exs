@@ -89,4 +89,16 @@ defmodule DgraphExTest do
     assert result == "{\nperson(func: eq(name, 2017-08-05T00:00:00.0+00:00)) {\naddress\nname\n} }"
   end
 
+  test "render function with uid literal expression" do
+    result =
+      query()
+      |> func(:person, uid("0x9"), [
+        :address,
+        :name,
+      ])
+      |> render
+      |> TestHelper.only_spaces
+    assert result == "{\nperson(func: uid(0x9)) {\naddress\nname\n} }"
+  end
+
 end
