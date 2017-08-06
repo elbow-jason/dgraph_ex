@@ -34,5 +34,7 @@ defmodule DgraphEx.ExprTest do
     assert regexp(:name, "\d{4}") |> Expr.Regexp.render == "regexp(name, /\d{4}/)"
   end
 
-
+  test "render anyofterms" do
+    assert anyofterms(:beef, "cow bull moo") |> Expr.Anyofterms.render == "anyofterms(beef, \"cow bull moo\")"
+  end
 end

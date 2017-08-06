@@ -11,6 +11,7 @@ defmodule DgraphEx.Expr do
       # indexes
       use Expr.Eq
       use Expr.Allofterms
+      use Expr.Anyofterms
       use Expr.Regexp
     end
   end
