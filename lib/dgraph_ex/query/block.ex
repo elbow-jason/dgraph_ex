@@ -4,7 +4,15 @@ defmodule DgraphEx.Query.Block do
   defstruct [
     label: nil,
     keywords: [],
+    aliased: nil,
   ]
+
+  #as per @srh on dgraph slack (there may be more than these) v0.8.0
+  @keyword_keys ~w(func orderasc orderdesc first after offset)a
+
+  def keyword_allowed_keys() do
+    @keyword_keys
+  end
 
   defmacro __using__(_) do
     quote do
@@ -14,9 +22,11 @@ defmodule DgraphEx.Query.Block do
       def block(label, args) when is_list(args) do
         DgraphEx.Query.Block.new(args)
       end
+      def aliased(label, value) when is_atom(label) do
+        DgraphEx.Query.Block.aliased(label, value)
+      end
     end
   end
-
 
   def new(kwargs) when length(kwargs) >= 2 do
     %Block{
@@ -29,17 +39,25 @@ defmodule DgraphEx.Query.Block do
       keywords: kwargs,
     }
   end
+  def aliased(key, val) do
+    %Block{
+      aliased: {key, val}
+    }
+  end
 
+  def render(%Block{aliased: {key, %{__struct__: module} = model}}) do
+    "#{key}: #{module.render(model)}"
+  end
+  def render(%Block{aliased: {key, value}}) do
+    "#{key}: #{value}"
+  end
   def render(%Block{label: label} = b) do
     "#{label}("<> render_keywords(b) <>")"
   end
   def render(block) when is_tuple(block) do
     block
     |> Tuple.to_list
-    |> render
-  end
-  def render(block) when is_list(block) do
-    do_render(block, [])
+    |> do_render([])
   end
 
   defp render_keywords(%Block{keywords: keywords}) do
@@ -57,7 +75,7 @@ defmodule DgraphEx.Query.Block do
   defp do_render([], lines) do
     lines
     |> Enum.reverse
-    |> Enum.join("\n")
+    |> Enum.join(" ")
     |> wrap_curlies
   end
 
@@ -98,6 +116,6 @@ defmodule DgraphEx.Query.Block do
   end
 
   defp wrap_curlies(block) do
-    "{\n"<>block<>"\n}"
+    "{ "<>block<>" }"
   end
 end

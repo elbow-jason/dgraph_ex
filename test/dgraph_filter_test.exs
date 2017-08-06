@@ -8,7 +8,7 @@ defmodule DgraphEx.FilterTest do
   test "render filter" do
     assert filter(eq(:beef, "moo"), {
       :name
-    }) |> Filter.render == "@filter(eq(beef, \"moo\")) {\nname\n}"
+    }) |> Filter.render == "@filter(eq(beef, \"moo\")) { name }"
   end
 
   test "func and filter work together" do
@@ -20,7 +20,7 @@ defmodule DgraphEx.FilterTest do
       })
       |> render
 
-    assert result ==  "{\nperson(func: eq(name, \"Jason\"))  @filter(eq(age, 42)) {\nname\n}\n}"
+    assert result ==  "{ person(func: eq(name, \"Jason\")) @filter(eq(age, 42)) { name } }"
   end
 
 end

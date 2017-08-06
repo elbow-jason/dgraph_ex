@@ -11,9 +11,9 @@ defmodule DgraphEx.MutationTest do
       |> set
       |> field(:person, :name, "Jason", :string)
       |> render
-    assert result == "mutation {\n set { _:person <name> \"Jason\"^^<xs:string> . } \n}"
+    assert result == "mutation { set { _:person <name> \"Jason\"^^<xs:string> . } }"
   end
 
 
-  
+
 end

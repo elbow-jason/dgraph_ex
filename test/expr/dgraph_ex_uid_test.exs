@@ -23,6 +23,6 @@ defmodule DgraphEx.UidTest do
     assert Block.render({[
       friends: uid(:b),
       name: :name@en,
-    ]}) == "{\nfriends: uid(b)\nname: name@en\n}"
+    ]}) == "{ friends: uid(b) name: name@en }"
   end
 end

@@ -30,7 +30,14 @@ defmodule DgraphEx.Query do
       end
 
       def render(x) do
-        Query.render(x)
+        x
+        |> Query.render
+        |> only_spaces
+      end
+
+      defp only_spaces(item) when is_binary(item) do
+        item
+        |> String.replace(~r/(\s+)/,  " ")
       end
 
       def assemble(x) do
