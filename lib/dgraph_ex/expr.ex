@@ -14,6 +14,7 @@ defmodule DgraphEx.Expr do
       Expr.Neq.define_funcs(Expr.Lt, :lt)
       Expr.Neq.define_funcs(Expr.Le, :le)
       Expr.Neq.define_funcs(Expr.Gt, :gt)
+      Expr.Neq.define_funcs(Expr.Ge, :ge)
       use Expr.Allofterms
       use Expr.Anyofterms
       use Expr.Alloftext
