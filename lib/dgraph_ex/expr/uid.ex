@@ -15,23 +15,36 @@ defmodule DgraphEx.Expr.Uid do
     end
   end
 
-  def new(value) when is_atom(value) do
+  @types [
+    :literal,
+    :expression,
+  ]
+
+  def new(value) do
+    case value do
+      x when is_atom(x)   -> new(x, :expression)
+      x when is_binary(x) -> new(x, :literal)
+    end
+  end
+  def new(value, type) when (is_atom(value) or is_binary(value)) and type in @types do
     %Uid{
       value: value,
-      type: :expression,
+      type: type,
     }
   end
-  def new(value) when is_binary(value) do
-    %Uid{
-      value: value,
-      type: :literal,
-    }
+
+  def as_expression(%Uid{} = u) do
+    %{ u | type: :expression }
+  end
+
+  def as_literal(%Uid{} = u) do
+    %{ u | type: :literal }
   end
 
   def render(%Uid{value: value, type: :literal}) when is_binary(value) do
     Util.as_literal(value, :uid)
   end
-  def render(%Uid{value: value, type: :expression}) when is_atom(value) and not is_nil(value) do
+  def render(%Uid{value: value, type: :expression}) do
     "uid("<>to_string(value)<>")"
   end
 
