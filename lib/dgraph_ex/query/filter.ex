@@ -1,6 +1,6 @@
 defmodule DgraphEx.Query.Filter do
-  alias DgraphEx.Query.{Filter, Block}
-  alias DgraphEx.Field
+  alias DgraphEx.{Query, Field}
+  alias Query.{Filter, Block}
 
   defstruct [
     expr: nil,
@@ -10,11 +10,12 @@ defmodule DgraphEx.Query.Filter do
   defmacro __using__(_) do
     quote do
       alias DgraphEx.Query
-      def filter(%Query{} = q, %{__struct__: _} = expr, block) do
-        Query.put_sequence(q, filter(expr, block))
-      end
-      def filter(%{__struct__: _} = expr, block) when is_tuple(block) do
-        DgraphEx.Query.Filter.new(expr, block)
+      def filter(a, b \\ nil, c \\ nil) do
+        case {a, b, c} do
+          {_, nil, nil} -> DgraphEx.Query.Filter.filter_1(a)
+          {_,   _, nil} -> DgraphEx.Query.Filter.filter_2(a, b)
+          _             -> DgraphEx.Query.Filter.filter_3(a, b, c)
+        end
       end
     end
   end
@@ -24,6 +25,22 @@ defmodule DgraphEx.Query.Filter do
       expr:   expr,
       block:  block,
     }
+  end
+
+  def filter_1(%{__struct__: _} = expr) do
+    %Filter{
+      expr:   expr,
+      block:  {},
+    }
+  end
+  def filter_2(%{__struct__: _} = expr, block) when is_tuple(block) do
+    %Filter{
+      expr:   expr,
+      block:  block,
+    }
+  end
+  def filter_3(%Query{} = q, %{__struct__: _} = expr, block) when is_tuple(block) do
+    Query.put_sequence(q, filter_2(expr, block))
   end
 
   def render(%Filter{} = f) do

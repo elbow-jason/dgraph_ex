@@ -142,20 +142,19 @@ defmodule DgraphExTest do
  
   test "compilcated query 2" do
     # booyah
-    result =
-      render({
-        :ID, :as, func(:var, allofterms(:name@en, "Steven"), {
-          :"director.film", {
-            :num_actors, :as, count(:starring)
-          },
-          :total, :as, sum(val(:num_actors))
-        }),
-        func(:dirs, uid(:ID)), filter(gt(val(:total), 100), {
-          :name@en,
-          total_actors: val(:total),
-        })
-      })
-    assert result == "{\nID as var(func: allofterms(name@en, \"Steven\")) {\ndirector.film\n{\nnum_actors as count(starring)\n}\ntotal as sum(val(num_actors))\n}\ndirs(func: uid(ID)) \n@filter(gt(val(total), 100)) {\nname@en\ntotal_actors: val(total)\n}\n}"
+    result = {
+      :ID, :as, func(:var, allofterms(:name@en, "Steven")), {
+        :"director.film", {
+          :num_actors, :as, count(:starring)
+        },
+        :total, :as, sum(val(:num_actors))
+      },
+      func(:dirs, uid(:ID)), filter(gt(val(:total), 100)), {
+        :name@en,
+        total_actors: val(:total),
+      }
+    }
+    assert render(result) ==  "{\nID as var(func: allofterms(name@en, \"Steven\")) \n{\ndirector.film\n{\nnum_actors as count(starring)\n}\ntotal as sum(val(num_actors))\n}\ndirs(func: uid(ID)) \n@filter(gt(val(total), 100)) \n{\nname@en\ntotal_actors: val(total)\n}\n}"
   end
 
 end
