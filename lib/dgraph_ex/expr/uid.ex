@@ -68,8 +68,11 @@ defmodule DgraphEx.Expr.Uid do
     {:ok, uid_literal} = Util.as_literal(value, :uid)
     uid_literal
   end
-  def render(%Uid{value: value, type: :expression}) do
+  def render(%Uid{value: value, type: :expression}) when (is_atom(value) or is_binary(value)) do
     render_expression([value])
+  end
+  def render(%Uid{value: value, type: :expression}) when is_list(value) do
+    render_expression(value)
   end
   defp render_expression(uids) when is_list(uids) do
     args =
