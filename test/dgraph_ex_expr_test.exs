@@ -26,5 +26,13 @@ defmodule DgraphEx.ExprTest do
     assert val(:my_var) |> Expr.Val.render == "val(my_var)"
   end
 
+  test "render regexp with Regex" do
+    assert regexp(:name, ~r/Jason/) |> Expr.Regexp.render == "regexp(name, /Jason/)"
+  end
+
+  test "render regexp with string" do
+    assert regexp(:name, "\d{4}") |> Expr.Regexp.render == "regexp(name, /\d{4}/)"
+  end
+
 
 end
