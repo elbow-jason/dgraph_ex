@@ -6,6 +6,7 @@ defmodule DgraphEx.Expr do
       use Expr.Count
       use Expr.Eq
       use Expr.Uid
+      use Expr.Allofterms
     end
   end
   

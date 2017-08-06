@@ -6,10 +6,15 @@ defmodule DgraphEx.Expr.Count do
   
   defmacro __using__(_) do
     quote do
-      def count(value) when is_atom(value) do
-        %DgraphEx.Expr.Count{value: value}
+      def count(value) do
+        alias DgraphEx.Expr.Count
+        Count.new(value)
       end
     end
+  end
+
+  def new(value) when is_atom(value) do
+    %DgraphEx.Expr.Count{value: value}
   end
 
   def render(%Count{value: value}) do

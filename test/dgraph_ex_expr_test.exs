@@ -10,8 +10,17 @@ defmodule DgraphEx.ExprTest do
     assert count(:beef) |> Expr.Count.render == "count(beef)"
   end
 
-  test "render uid" do
+  test "render uid as literal" do
     assert uid("0x123") |> Expr.Uid.render == {:ok, "<0x123>"}
   end
+
+  test "render uid as label" do
+    assert uid(:beef) |> Expr.Uid.render == "uid(beef)"
+  end
+
+  test "render allofterms" do
+    assert allofterms(:beef, "cow bull moo") |> Expr.Allofterms.render == "allofterms(beef, \"cow bull moo\")"
+  end
+
 
 end

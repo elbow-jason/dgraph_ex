@@ -18,7 +18,7 @@ defmodule DgraphEx.Expr.Uid do
   def new(value) when is_atom(value) do
     %Uid{
       value: value,
-      type: :label,
+      type: :expression,
     }
   end
   def new(value) when is_binary(value) do
@@ -31,8 +31,8 @@ defmodule DgraphEx.Expr.Uid do
   def render(%Uid{value: value, type: :literal}) when is_binary(value) do
     Util.as_literal(value, :uid)
   end
-  def render(%Uid{value: value, type: :label}) when is_atom(value) and not is_nil(value) do
-    to_string(value)
+  def render(%Uid{value: value, type: :expression}) when is_atom(value) and not is_nil(value) do
+    "uid("<>to_string(value)<>")"
   end
-  
+
 end
