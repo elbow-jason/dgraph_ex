@@ -7,7 +7,33 @@ defmodule DgraphEx.QueryBlockTest do
 
   test "empty block" do
     assert Block.render({}) == "{ }"
-  
   end
+
+  test "block with simple terms" do
+    assert Block.render({
+      :name,
+      :address,
+    }) == "{\nname\naddress\n}"
+  end
+
+  test "block with keyword term alias (at the end only)" do
+    assert Block.render({
+      :name,
+      :address,
+      age: :years,
+    }) == "{\nname\naddress\nage: years\n}"
+  end
+  
+
+  test "block with keyword multiple term alias (at the end only)" do
+    assert Block.render({
+      :name,
+      :address,
+      age: :years,
+      favorite_color: :fav_color,
+    }) == "{\nname\naddress\nage: years\nfavorite_color: fav_color\n}"
+  end
+
+
 
 end

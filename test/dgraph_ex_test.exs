@@ -157,4 +157,16 @@ defmodule DgraphExTest do
     assert render(result) ==  "{\nID as var(func: allofterms(name@en, \"Steven\")) \n{\ndirector.film\n{\nnum_actors as count(starring)\n}\ntotal as sum(val(num_actors))\n}\ndirs(func: uid(ID)) \n@filter(gt(val(total), 100)) \n{\nname@en\ntotal_actors: val(total)\n}\n}"
   end
 
+   
+  test "compilcated query 3" do
+    result = {
+      func(:person, anyofterms(:name, "Jason")), {
+        :name,
+        :address,
+      }
+    }
+    assert render(result) ==  "{\nperson(func: anyofterms(name, \"Jason\")) \n{\nname\naddress\n}\n}"
+  end
+
+
 end
