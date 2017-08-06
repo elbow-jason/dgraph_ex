@@ -34,6 +34,14 @@ defmodule DgraphEx.QueryBlockTest do
     }) == "{\nname\naddress\nage: years\nfavorite_color: fav_color\n}"
   end
 
+  test "block with expressions as keywords works" do
+    assert Block.render({
+      :name,
+      :address,
+      age: count(:years),
+      friends: sum(val(:F)),
+    }) == "{\nname\naddress\nage: count(years)\nfriends: sum(val(F))\n}"
+  end
 
 
 end
