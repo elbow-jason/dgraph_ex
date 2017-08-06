@@ -1,5 +1,5 @@
 defmodule DgraphEx.Query.Filter do
-  alias DgraphEx.Query.Filter
+  alias DgraphEx.Query.{Filter, Block}
   alias DgraphEx.Field
 
   defstruct [
@@ -13,7 +13,7 @@ defmodule DgraphEx.Query.Filter do
       def filter(%Query{} = q, %{__struct__: _} = expr, block) do
         Query.put_sequence(q, filter(expr, block))
       end
-      def filter(%{__struct__: _} = expr, block) when length(block) > 0 do
+      def filter(%{__struct__: _} = expr, block) when is_tuple(block) do
         DgraphEx.Query.Filter.new(expr, block)
       end
     end
@@ -34,12 +34,11 @@ defmodule DgraphEx.Query.Filter do
     module.render(model)
   end
 
+  defp render_block(%Filter{block: {}}) do
+    ""
+  end
   defp render_block(%Filter{block: block}) do
-    "{\n" <> (
-      block
-      |> Enum.map(&interpolate/1)
-      |> Enum.join("\n")
-    ) <> "\n}\n"
+    Block.render(block)
   end
 
   defp interpolate(item) do

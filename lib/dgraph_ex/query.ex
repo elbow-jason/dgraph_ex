@@ -10,6 +10,7 @@ defmodule DgraphEx.Query do
     Func,
     MutationSet,
     Filter,
+    Block,
   }
 
   defstruct [
@@ -58,8 +59,12 @@ defmodule DgraphEx.Query do
           |> Enum.join(" ")
         "{\n" <> rendered <> "\n}"
       %{__struct__: module} = model ->
-        "" <> module.render(model) <> ""
+        module.render(model)
     end
+  end
+
+  def render(block) when is_tuple(block) do
+    Block.render(block)
   end
 
   def assemble(%__MODULE__{sequence: sequence}) do
@@ -83,8 +88,8 @@ defmodule DgraphEx.Query do
     assemble(rest, %As{identifier: identifier})
   end
 
-  # func with empty block followed by a filter with a block
-  def assemble([%Func{block: []} = func, %Filter{block: block} = filter | rest]) when length(block) > 0 do
+  # func with empty block followed by a filter
+  def assemble([%Func{block: {}} = func, %Filter{} = filter | rest]) do
     [ func, filter | assemble(rest) ]
     |> List.flatten
   end

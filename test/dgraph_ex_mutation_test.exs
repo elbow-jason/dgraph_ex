@@ -11,8 +11,7 @@ defmodule DgraphEx.MutationTest do
       |> set
       |> field(:person, :name, "Jason", :string)
       |> render
-      |> TestHelper.only_spaces
-    assert result == "mutation { set { _:person <name> \"Jason\"^^<xs:string> . } }"
+    assert result == "mutation {\n set { _:person <name> \"Jason\"^^<xs:string> . } \n}"
   end
 
 end
