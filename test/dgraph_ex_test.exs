@@ -112,4 +112,20 @@ defmodule DgraphExTest do
     assert result == "{\nten_friends(func: eq(count(friend), 10)) {\nname\n} }"
   end
 
+  #dirs(func: uid(ID)) @filter(gt(val(total), 100)) {
+  #  name@en
+  #  total_actors : val(total)
+  #}
+  test "compilcated query 1" do
+    result =
+      query()
+      |> func(:dirs, uid(:ID))
+      |> filter(gt(val(:total), 100), [
+        :name@en,
+        total_actors: val(:total),
+      ])
+      |> render
+    assert result == "{\ndirs(func: uid(ID))  @filter(gt(val(total), 100)) {\nname@en\ntotal_actors: val(total)\n}\n\n}"
+  end
+
 end
