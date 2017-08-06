@@ -65,9 +65,12 @@ defmodule DgraphEx.UtilTest do
     assert Util.as_literal([-111.925278, 33.501324], :geo) == {:ok, "[-111.925278,33.501324]"}
   end
 
-  test "as_literal/2 int errors" do
+  test "as_literal/2 type error" do
     assert Util.as_literal("Eef", :int) == {:error, {:invalidly_typed_value, "Eef", :int}}
   end
 
+  test "as_literal/2 uid" do
+    assert Util.as_literal("beef", :uid) == {:ok, "<beef>"}
+  end
 
 end

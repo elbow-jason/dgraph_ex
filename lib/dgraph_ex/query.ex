@@ -61,12 +61,6 @@ defmodule DgraphEx.Query do
     end
   end
 
-  # defp do_render([], pre, post, _) do
-  #   (pre |> Enum.reverse |> Enum.join("\n")) <> (post |> Enum.join("\n"))
-  # end
-
-
-
   def assemble(%__MODULE__{sequence: sequence}) do
     sequence
     |> Enum.reverse
