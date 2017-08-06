@@ -7,7 +7,7 @@ defmodule DgraphExTest do
   test "render function" do
     result =
       query()
-      |> func(:person, eq(:name, "Jason", :string), [
+      |> func(:person, eq(:name, "Jason"), [
         :name,
         :address,
       ])
@@ -19,7 +19,7 @@ defmodule DgraphExTest do
   test "render function with alias" do
     result =
       query()
-      |> func(:person, eq(:name, "Jason", :string), [
+      |> func(:person, eq(:name, "Jason"), [
         :address,
         named: :name,
       ])
@@ -31,7 +31,7 @@ defmodule DgraphExTest do
   test "render function with count alias" do
     result =
       query()
-      |> func(:person, eq(:name, "Jason", :string), [
+      |> func(:person, eq(:name, "Jason"), [
         :address,
         names: count(:name),
       ])
@@ -43,7 +43,7 @@ defmodule DgraphExTest do
   test "render function with string value eq expr" do
     result =
       query()
-      |> func(:person, eq(:name, "Jason", :string), [
+      |> func(:person, eq(:name, "Jason"), [
         :address,
         :name,
       ])
@@ -55,7 +55,7 @@ defmodule DgraphExTest do
   test "render function with int value eq expr" do
     result =
       query()
-      |> func(:person, eq(:name, 123, :int), [
+      |> func(:person, eq(:name, 123), [
         :address,
         :name,
       ])
@@ -67,7 +67,7 @@ defmodule DgraphExTest do
   test "render function with bool value eq expr" do
     result =
       query()
-      |> func(:person, eq(:name, true, :bool), [
+      |> func(:person, eq(:name, true), [
         :address,
         :name,
       ])
@@ -80,7 +80,7 @@ defmodule DgraphExTest do
     {:ok, test_written_at} = Date.new(2017, 8, 5)
     result =
       query()
-      |> func(:person, eq(:name, test_written_at, :date), [
+      |> func(:person, eq(:name, test_written_at), [
         :address,
         :name,
       ])

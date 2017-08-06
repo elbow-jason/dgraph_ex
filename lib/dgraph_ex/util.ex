@@ -1,4 +1,5 @@
 defmodule DgraphEx.Util do
+  alias DgraphEx.Expr.Uid
 
   def as_rendered(value) do
     case value do
@@ -6,7 +7,19 @@ defmodule DgraphEx.Util do
       %Date{} = x       -> x |> Date.to_iso8601 |> Kernel.<>("T00:00:00.0+00:00")
       %DateTime{} = x   -> x |> DateTime.to_iso8601 |> String.replace("Z", "+00:00")
       x                 -> x |> to_string
-      
+    end
+  end
+
+  def infer_type(type) do
+    case type do
+      x when is_boolean(x)  -> :bool
+      x when is_binary(x)   -> :string
+      x when is_integer(x)  -> :int
+      x when is_float(x)    -> :float
+      x when is_list(x)     -> :geo
+      %DateTime{}           -> :datetime
+      %Date{}               -> :date
+      %Uid{}                -> :uid
     end
   end
 
@@ -48,5 +61,7 @@ defmodule DgraphEx.Util do
     |> String.replace(~r/^"/, "")
     |> String.replace(~r/"&/, "")
   end
+
+
 
 end
