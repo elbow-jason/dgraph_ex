@@ -26,13 +26,18 @@ defmodule DgraphEx.Query.Func do
   
 
   def render(%Func{} = f) do
-    "#{f.name}(func: #{render_expr(f)}) {\n" <> render_block(f) <> "\n}\n"
+    "#{f.name}(func: #{render_expr(f)}) " <> render_block(f)
   end
 
+  defp render_block(%Func{block: []}) do
+    ""
+  end
   defp render_block(%Func{block: block}) do
-    block
-    |> Enum.map(&interpolate/1)
-    |> Enum.join("\n")
+    "{\n" <> (
+      block
+      |> Enum.map(&interpolate/1)
+      |> Enum.join("\n")
+    ) <> "\n}\n"
   end
 
   defp render_expr(%Func{expr: %{__struct__: module} = model}) do

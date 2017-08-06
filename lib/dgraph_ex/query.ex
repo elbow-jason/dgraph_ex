@@ -9,6 +9,7 @@ defmodule DgraphEx.Query do
     As,
     Func,
     MutationSet,
+    Filter,
   }
 
   defstruct [
@@ -81,9 +82,15 @@ defmodule DgraphEx.Query do
   def assemble([%As{identifier: identifier} | rest ]) do
     assemble(rest, %As{identifier: identifier})
   end
-  # func
-  def assemble([%Func{} = f | rest]) do
-    [ f | assemble(rest) ]
+
+  # func with empty block followed by a filter with a block
+  def assemble([%Func{block: []} = func, %Filter{block: block} = filter | rest]) when length(block) > 0 do
+    [ func, filter | assemble(rest) ]
+    |> List.flatten
+  end
+  # any func
+  def assemble([%Func{} = func | rest]) do
+    [ func | assemble(rest) ]
     |> List.flatten
   end
 
