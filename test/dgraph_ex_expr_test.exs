@@ -45,4 +45,8 @@ defmodule DgraphEx.ExprTest do
   test "render alloftext" do
     assert alloftext(:beef, "cow bull moo") |> Expr.Alloftext.render == "alloftext(beef, \"cow bull moo\")"
   end
+
+  test "render lt" do
+    assert lt(:age, 100) |> Expr.Lt.render == "lt(age, 100)"
+  end
 end
