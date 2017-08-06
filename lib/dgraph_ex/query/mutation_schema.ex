@@ -1,5 +1,6 @@
-defmodule DgraphEx.MutationSchema do
-  alias DgraphEx.{MutationSchema, Field}
+defmodule DgraphEx.Query.MutationSchema do
+  alias DgraphEx.{Field}
+  alias DgraphEx.Query.{MutationSchema}
 
   defstruct [
     fields: []

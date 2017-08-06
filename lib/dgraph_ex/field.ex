@@ -17,14 +17,14 @@ defmodule DgraphEx.Field do
   ]
 
   @allowed_types [
-    :string
-    :datetime
-    :date
-    :int
-    :bool
-    :float
-    :password
-    :geo
+    :string,
+    :datetime,
+    :date,
+    :int,
+    :bool,
+    :float,
+    :password,
+    :geo,
   ]
 
   defmacro field(predicate, type, options \\ []) when type in @allowed_types do
@@ -48,6 +48,23 @@ defmodule DgraphEx.Field do
         model: model,
       }
       Module.put_attribute(__MODULE__, :vertex_fields, field)
+    end
+  end
+
+  defmacro __using__(_) do
+    quote do
+      alias DgraphEx.{Query, Field}
+
+      def field(%Query{} = q, subject, predicate, object, type) do
+        q
+        |> Query.put_sequence(%Field{
+          subject:    subject,
+          predicate:  predicate,
+          object:     object,
+          type:       type,
+        })
+      end
+
     end
   end
 
@@ -147,11 +164,22 @@ defmodule DgraphEx.Field do
     |> Enum.join(" ")
   end
 
-  def dollarify(%Field{} = f) do
-    "$" <> to_string(f.subject) <> "_" <> to_string(f.predicate)
+  def as_delete(%Field{type: :uid} = f) do
+    [
+      
+    ]
   end
 
-  defp stringify(value) do
+
+
+  def dollarify(%Field{} = f) do
+     dollarify(to_string(f.subject) <> "_" <> to_string(f.predicate))
+  end
+  def dollarify(item) do
+    "$" <> to_string(item)
+  end
+
+  def stringify(value) do
     case value do
       x when is_list(x) -> x |> Poison.encode!
       %Date{} = x       -> x |> Date.to_iso8601 |> Kernel.<>("T00:00:00.0+00:00")
@@ -205,7 +233,7 @@ defmodule DgraphEx.Field do
     end
   end
 
-  defp wrap_quotes(item) do
+  def wrap_quotes(item) do
     "\"" <> item <> "\""
   end
 

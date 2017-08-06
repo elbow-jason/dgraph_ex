@@ -37,25 +37,25 @@ defmodule DgraphEx.Client do
     end
   end
 
-  def handle_response(body) when is_binary(body) do
+  defp handle_response(body) when is_binary(body) do
     case Poison.decode(body) do
       {:ok, json} -> handle_response(json)
       err -> err
     end
   end
-  def handle_response(%{"errors" => _} = err) do
+  defp handle_response(%{"errors" => _} = err) do
     {:error, err}
   end
-  def handle_response(%{"data" => _} = data) do
+  defp handle_response(%{"data" => _} = data) do
     data
   end
-  def handle_response(%{"code" => "Success"} = json) do
+  defp handle_response(%{"code" => "Success"} = json) do
     {:ok, json}
   end
-  def handle_response(%{"code" => _, "message" => _} = err) do
+  defp handle_response(%{"code" => _, "message" => _} = err) do
     {:error, err}
   end
-  def handle_response(ok) do
+  defp handle_response(ok) do
     {:ok, ok}
   end
 

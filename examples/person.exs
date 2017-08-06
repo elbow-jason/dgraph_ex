@@ -1,53 +1,53 @@
 defmodule DgraphEx.Examples.Person do
   use DgraphEx.Vertex
 
-  alias DgraphEx.Vertex
   alias DgraphEx.Examples.Person
 
-  vertex do
+  vertex :person do
     field :name,    :string, index: [:exact, :term]
     field :address, :string, index: [:exact, :term]
   end
 
-  def schema do
-    Person
-    |> Vertex.schema
-  end
+  def jason_g do
 
-  def write_schema do
-    schema()
-    |> Vertex.mutation
-    |> DgraphEx.query()
-  end
-
-  def put_person(name, age, ""<>dob) do
-    {:ok, dob} = Date.from_iso8601(dob)
-    put_person(name, age, dob)
-  end
-  def put_person(""<>name, age, %Date{} = dob) when is_integer(age) do
-    tmpl = """
-    mutation {
-      set {
-        _:person <name> $name" .
-        _:person <age> $age .
-        _:person <date_of_birth> $dob .
+    person = 
+      %Person{
+        name: "Jason Goldberger",
+        address: "123 Maple Rd Phoenix, AZ 85255"
       }
-    }
-    """
-    vars = %{
-      name: {name, :string},
-      age: {age, :int},
-      dob: {dob, :datetime},
-    }
-    DgraphEx.query(tmpl, vars)
+    rendered =
+      DgraphEx.new
+      |> DgraphEx.mutation
+      |> DgraphEx.set
+      |> DgraphEx.model(:person, person)
+      |> DgraphEx.assemble
+      |> DgraphEx.render
+
+    IO.puts("rendered: #{rendered}")
+    result =
+      rendered
+      |> DgraphEx.Client.send
+    
+    IO.puts("result: #{inspect result}")
+    result
   end
 
-
-  @doc """
-  Assuming we want adult persons
-  """
-  def get_adults do
-
+  def billy_w do
+    rendered =
+      DgraphEx.new
+      |> DgraphEx.mutation
+      |> DgraphEx.set
+      |> DgraphEx.field(:person, :name, "Bill Wiggins", :string)
+      |> DgraphEx.field(:person, :address, "123 Oak St. Scottsdale, AZ 85251", :string)
+      |> DgraphEx.assemble
+      |> DgraphEx.render
+    
+    IO.puts("rendered: #{rendered}")
+    result =
+      rendered
+      |> DgraphEx.Client.send
+    
+    IO.puts("result: #{inspect result}")
+    result
   end
-
 end
