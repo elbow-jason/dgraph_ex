@@ -22,5 +22,9 @@ defmodule DgraphEx.ExprTest do
     assert allofterms(:beef, "cow bull moo") |> Expr.Allofterms.render == "allofterms(beef, \"cow bull moo\")"
   end
 
+  test "render val" do
+    assert val(:my_var) |> Expr.Val.render == "val(my_var)"
+  end
+
 
 end
