@@ -37,4 +37,12 @@ defmodule DgraphEx.ExprTest do
   test "render anyofterms" do
     assert anyofterms(:beef, "cow bull moo") |> Expr.Anyofterms.render == "anyofterms(beef, \"cow bull moo\")"
   end
+
+  test "render anyoftext" do
+    assert anyoftext(:beef, "cow bull moo") |> Expr.Anyoftext.render == "anyoftext(beef, \"cow bull moo\")"
+  end
+
+  test "render alloftext" do
+    assert alloftext(:beef, "cow bull moo") |> Expr.Alloftext.render == "alloftext(beef, \"cow bull moo\")"
+  end
 end

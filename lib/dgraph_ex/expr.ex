@@ -12,6 +12,8 @@ defmodule DgraphEx.Expr do
       use Expr.Eq
       use Expr.Allofterms
       use Expr.Anyofterms
+      use Expr.Alloftext
+      use Expr.Anyoftext
       use Expr.Regexp
     end
   end
