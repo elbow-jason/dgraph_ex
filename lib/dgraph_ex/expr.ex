@@ -5,6 +5,7 @@ defmodule DgraphEx.Expr do
     quote do
       use Expr.Count
       use Expr.Eq
+      use Expr.Uid
     end
   end
   

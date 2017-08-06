@@ -1,5 +1,5 @@
-defmodule DgraphEx.Query.Uid do
-  alias DgraphEx.Query.Uid
+defmodule DgraphEx.Expr.Uid do
+  alias DgraphEx.Expr.Uid
   alias DgraphEx.Util
 
   defstruct [
@@ -9,8 +9,8 @@ defmodule DgraphEx.Query.Uid do
 
   defmacro __using__(_) do
     quote do
-      def uid(value) when is_atom(value) do
-        DgraphEx.Query.Uid.new(value)
+      def uid(value) when is_atom(value) or is_binary(value) do
+        DgraphEx.Expr.Uid.new(value)
       end
     end
   end
