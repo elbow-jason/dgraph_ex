@@ -11,10 +11,9 @@ defmodule DgraphEx.Expr do
       # indexes
       use Expr.Eq
       require Expr.Neq
-      require Expr.Lt
-      require Expr.Le
       Expr.Neq.define_funcs(Expr.Lt, :lt)
       Expr.Neq.define_funcs(Expr.Le, :le)
+      Expr.Neq.define_funcs(Expr.Gt, :gt)
       use Expr.Allofterms
       use Expr.Anyofterms
       use Expr.Alloftext
