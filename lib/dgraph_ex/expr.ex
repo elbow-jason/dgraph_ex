@@ -20,6 +20,8 @@ defmodule DgraphEx.Expr do
       require Expr.Agg
       Expr.Agg.define_funcs(Expr.Sum, :sum)
       Expr.Agg.define_funcs(Expr.Avg, :avg)
+      Expr.Agg.define_funcs(Expr.Min, :min)
+      Expr.Agg.define_funcs(Expr.Max, :max)
 
       use Expr.Allofterms
       use Expr.Anyofterms

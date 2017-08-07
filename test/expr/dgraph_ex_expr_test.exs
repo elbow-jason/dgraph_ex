@@ -69,4 +69,13 @@ defmodule DgraphEx.ExprTest do
   test "render avg" do
     assert avg(val(:experience)) |> Expr.Avg.render == "avg(val(experience))"
   end
+
+  test "render min" do
+    assert min(val(:experience)) |> Expr.Min.render == "min(val(experience))"
+  end
+
+  test "render max" do
+    assert max(val(:experience)) |> Expr.Max.render == "max(val(experience))"
+  end
+
 end
