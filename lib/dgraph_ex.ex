@@ -8,6 +8,13 @@ defmodule DgraphEx do
   use DgraphEx.Field
   use DgraphEx.Expr
 
+  require DgraphEx.Expr.Math
+  defmacro math(block) do
+    quote do
+      DgraphEx.Expr.Math.math(block)
+    end
+  end
+
   use Query
   use Query.Mutation
   use Query.Schema
@@ -18,6 +25,7 @@ defmodule DgraphEx do
   use Query.Filter
   use Query.Block
 
+  
 end
   # Mutation,
   # Schema,
