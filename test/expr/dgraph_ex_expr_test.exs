@@ -61,4 +61,8 @@ defmodule DgraphEx.ExprTest do
   test "render ge" do
     assert ge(:age, 100) |> Expr.Ge.render == "ge(age, 100)"
   end
+
+  test "render sum" do
+    assert sum(val(:experience)) |> Expr.Sum.render == "sum(val(experience))"
+  end
 end

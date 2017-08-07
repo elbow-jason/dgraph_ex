@@ -168,5 +168,21 @@ defmodule DgraphExTest do
     assert render(result) == "{ person(func: anyofterms(name, \"Jason\")) { name address } }"
   end
 
+  test "blade runner example" do
+    # https://docs.dgraph.io/query-language/#applying-filters
+    # the second one down
+    example_from_the_website = "{ bladerunner(func: anyofterms(name, \"Blade Runner\")) @filter(le(initial_release_date, \"2000\")) { _uid_ name@en initial_release_date netflix_id } }"
+    b = {
+      block(:bladerunner, func: anyofterms(:name, "Blade Runner")),
+      filter(le(:initial_release_date, "2000")), {
+        :_uid_,
+        :name@en,
+        :initial_release_date,
+        :netflix_id,
+      }
+    }
+    assert render(b) == example_from_the_website
+  end
+
 
 end

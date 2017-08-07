@@ -7,15 +7,18 @@ defmodule DgraphEx.Expr do
       use Expr.Val
       use Expr.Count
       use Expr.Uid
-      use Expr.Sum
       
       # indexes
       use Expr.Eq
+
       require Expr.Neq
       Expr.Neq.define_funcs(Expr.Lt, :lt)
       Expr.Neq.define_funcs(Expr.Le, :le)
       Expr.Neq.define_funcs(Expr.Gt, :gt)
       Expr.Neq.define_funcs(Expr.Ge, :ge)
+
+      require Expr.Agg
+      Expr.Agg.define_funcs(Expr.Sum, :sum)
       use Expr.Allofterms
       use Expr.Anyofterms
       use Expr.Alloftext
