@@ -65,4 +65,8 @@ defmodule DgraphEx.ExprTest do
   test "render sum" do
     assert sum(val(:experience)) |> Expr.Sum.render == "sum(val(experience))"
   end
+
+  test "render avg" do
+    assert avg(val(:experience)) |> Expr.Avg.render == "avg(val(experience))"
+  end
 end
