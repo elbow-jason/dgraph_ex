@@ -47,20 +47,32 @@ defmodule DgraphEx.Query.Filter do
   end
 
   def render(%Filter{expr: expr}) do
-    "@filter(#{render_expr(expr)})"
+    "@filter#{render_expr(expr)}"
   end
 
-  defp render_expr(%{__struct__: module} = model) do
+  defp render_single(%{__struct__: module} = model) do
     module.render(model)
   end
-  defp render_expr(connector) when connector in @connectors do
+  defp render_single(connector) when connector in @connectors do
     render_connector(connector)
   end
+  defp render_single(list) when is_list(list) do
+    render_expr(list)
+  end
+  
   defp render_expr(exprs) when is_list(exprs) do
     exprs
-    |> Enum.reverse
-    |> Enum.map(&render_expr/1)
+    # |> Enum.reverse
+    |> Enum.map(&render_single/1)
     |> Enum.join(" ")
+    |> wrap_parens
+  end
+  defp render_expr(item) do
+    render_expr([item])
+  end
+
+  defp wrap_parens(item) do
+    "("<>item<>")"
   end
 
   defp render_connector(:and), do: "AND"

@@ -38,7 +38,29 @@ defmodule DgraphEx.FilterTest do
 
     assert render(result) ==  clean_format("""
       {
-        person(func: eq(name, "Jason")) @filter(lt(age, 65) AND gt(age, 30)) {
+        person(func: eq(name, "Jason")) @filter(gt(age, 30) AND lt(age, 65)) {
+          name
+        }
+      }
+    """)
+  end
+
+  test "filter can take a nested list of expressions and connectors" do
+    result =
+      query()
+      |> func(:person, eq(:name, "Jason"))
+      |> filter([
+        :not, [
+          gt(:age, 30), :and, lt(:age, 65)
+        ]
+      ])
+      |> select({
+        :name
+      })
+
+    assert render(result) ==  clean_format("""
+      {
+        person(func: eq(name, "Jason")) @filter(NOT (gt(age, 30) AND lt(age, 65))) {
           name
         }
       }
