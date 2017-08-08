@@ -93,5 +93,10 @@ defmodule DgraphEx.Query.Kwargs do
     |> Query.put_sequence(DgraphEx.count(item))
     |> do_query(rest)
   end
+  defp do_query(q, [ {:has, value} | rest ]) do
+    q
+    |> Query.put_sequence(DgraphEx.has(value))
+    |> do_query(rest)
+  end
 
 end
