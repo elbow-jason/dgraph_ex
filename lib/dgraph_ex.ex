@@ -27,7 +27,7 @@ defmodule DgraphEx do
   use Query.Filter
   use Query.Block
   use Query.Directive
-
+  use Query.Groupby
   
 end
   # Mutation,

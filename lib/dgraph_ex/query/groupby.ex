@@ -8,6 +8,7 @@ defmodule DgraphEx.Query.Groupby do
   defmacro __using__(_) do
     quote do
       alias DgraphEx.Query.Groupby
+
       def groupby(pred) when is_atom(pred) do
         Groupby.new(pred)
       end
