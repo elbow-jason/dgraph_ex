@@ -1,10 +1,16 @@
 defmodule DgraphEx.Query.Filter do
   alias DgraphEx.{Query}
-  alias Query.{Filter, Block}
+  alias Query.{Filter}
   alias DgraphEx.Expr.Uid
 
   defstruct [
     expr: nil,
+  ]
+
+  @connectors [
+    :and,
+    :or,
+    :not,
   ]
 
   defmacro __using__(_) do
@@ -40,15 +46,28 @@ defmodule DgraphEx.Query.Filter do
     put_sequence(q, new(expr))
   end
 
-  def render(%Filter{expr: expr} = f) do
+  def render(%Filter{expr: expr}) do
     "@filter(#{render_expr(expr)})"
   end
 
   defp render_expr(%{__struct__: module} = model) do
     module.render(model)
   end
+  defp render_expr(connector) when connector in @connectors do
+    render_connector(connector)
+  end
+  defp render_expr(exprs) when is_list(exprs) do
+    exprs
+    |> Enum.reverse
+    |> Enum.map(&render_expr/1)
+    |> Enum.join(" ")
+  end
 
-  def prepare_expr(expr) do
+  defp render_connector(:and), do: "AND"
+  defp render_connector(:or),  do: "OR"
+  defp render_connector(:not), do: "NOT"
+
+  defp prepare_expr(expr) do
     case expr do
       %Uid{} -> expr |> Uid.as_expression
       _ -> expr
