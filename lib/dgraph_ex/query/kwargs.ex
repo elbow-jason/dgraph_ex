@@ -79,6 +79,11 @@ defmodule DgraphEx.Query.Kwargs do
     end)
     |> do_query(rest)
   end
+  defp do_query(q, [{:groupby, pred} | rest ]) when is_atom(pred) do
+    q
+    |> DgraphEx.groupby(pred)
+    |> do_query(rest)
+  end
 
 
 

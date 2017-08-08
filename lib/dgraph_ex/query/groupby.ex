@@ -7,10 +7,14 @@ defmodule DgraphEx.Query.Groupby do
 
   defmacro __using__(_) do
     quote do
+      alias DgraphEx.Query
       alias DgraphEx.Query.Groupby
 
       def groupby(pred) when is_atom(pred) do
         Groupby.new(pred)
+      end
+      def groupby(%Query{} = q, pred) when is_atom(pred) do
+        Query.put_sequence(q, Groupby.new(pred))
       end
     end
   end

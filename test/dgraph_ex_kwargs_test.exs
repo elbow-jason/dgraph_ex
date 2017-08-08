@@ -52,4 +52,16 @@ defmodule DgraphEx.KwargsTest do
            select: { :name, :age, :height, })
     assert render(q) == "{ person(func: eq(name, \"Jason\")) @cascade @ignorereflex { name age height } }"
   end
+
+
+  test "groupby works" do
+    q =
+      K.query(
+          groupby: :age,
+              get: :person,
+             func: eq(:name, "Jason"),
+       directives: [:cascade, :ignorereflex],
+           select: { :name, :age })
+    assert render(q) == "{ person(func: eq(name, \"Jason\")) @cascade @ignorereflex { name age height } }"
+  end
 end
