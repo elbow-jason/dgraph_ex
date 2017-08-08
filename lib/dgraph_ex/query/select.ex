@@ -62,12 +62,13 @@ defmodule DgraphEx.Query.Select do
   def put(%Select{fields: prev} = s, {key, value}) when is_atom(key) do
     %{ s | fields: [ {key, value} | prev ]}
   end
-  def put(%Select{} = s, key, value) when is_atom(key) do
-    put(s, {key, value})
-  end
   def put(%Select{fields: prev} = s, %As{} = as) do
     %{ s | fields: [ as | prev ]}
   end
+  def put(%Select{} = s, key, value) when is_atom(key) do
+    put(s, {key, value})
+  end
+
 
   def render(%Select{fields: fields}) do
     [" { " | fields |> Enum.reverse |> do_render ]
