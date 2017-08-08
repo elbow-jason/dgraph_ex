@@ -78,4 +78,9 @@ defmodule DgraphEx.ExprTest do
     assert max(val(:experience)) |> Expr.Max.render == "max(val(experience))"
   end
 
+  test "render has" do
+    assert has(:age) |> Expr.Has.render == "has(age)"
+  end
+
+
 end

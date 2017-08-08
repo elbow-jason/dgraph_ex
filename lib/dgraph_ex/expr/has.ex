@@ -22,7 +22,7 @@ defmodule DgraphEx.Expr.Has do
   end
 
   def render(%Has{value: value}) do
-    "has("<>value<>")"
+    "has("<>to_string(value)<>")"
   end
 
 end
