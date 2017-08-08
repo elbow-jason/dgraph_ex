@@ -12,7 +12,7 @@ defmodule DgraphEx.Query do
     MutationSet,
     Filter,
     Block,
-    Select,
+    # Select,
     Groupby,
   }
 
