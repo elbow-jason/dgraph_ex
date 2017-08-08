@@ -1,7 +1,7 @@
 defmodule DgraphEx.CountTest do
 
   use ExUnit.Case
-  doctest DgraphEx.Expr.Eq
+  doctest DgraphEx.Expr.Count
 
   import DgraphEx
   import TestHelpers
