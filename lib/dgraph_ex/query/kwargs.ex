@@ -1,6 +1,6 @@
 defmodule DgraphEx.Query.Kwargs do
   alias DgraphEx.Query
-  alias Query.{As, Block}
+  alias Query.{Block}
 
   #as per @srh on dgraph slack (there may be more than these) v0.8.0
   @executors ~w(func orderasc orderdesc first after offset)a
@@ -54,11 +54,6 @@ defmodule DgraphEx.Query.Kwargs do
   defp do_query(q, [{:select, block} | rest ]) when is_tuple(block) do
     q
     |> DgraphEx.select(block)
-    |> do_query(rest)
-  end
-  defp do_query(q, [{:ignorereflex, true} | rest ]) do
-    q
-    |> DgraphEx.ignorereflex()
     |> do_query(rest)
   end
   defp do_query(q, [{:ignorereflex, true} | rest ]) do
