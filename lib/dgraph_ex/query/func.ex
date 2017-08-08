@@ -34,7 +34,7 @@ defmodule DgraphEx.Query.Func do
     })
   end
   def func_3(name, expr, nil) do
-    func_3(name, expr, {})
+    Block.new(name, [func: expr])
   end
   def func_3(name, %{__struct__: _} = expr, block) when is_tuple(block) do
     %Query.Func{

@@ -10,22 +10,19 @@ defmodule DgraphEx.Query.Filter do
 
   defmacro __using__(_) do
     quote do
-      alias DgraphEx.Query
       def filter(a, b \\ nil, c \\ nil) do
-        case {a, b, c} do
-          {_, nil, nil} -> DgraphEx.Query.Filter.filter_1(a)
-          {_,   _, nil} -> DgraphEx.Query.Filter.filter_2(a, b)
-          _             -> DgraphEx.Query.Filter.filter_3(a, b, c)
-        end
+        DgraphEx.Query.Filter.new(a, b, c)
       end
     end
   end
 
-  def new(%{__struct__: _} = expr, block) do
-    %Filter{
-      expr:   prepare_expr(expr),
-      block:  block,
-    }
+  #remove new here.
+  def new(a, b \\ nil, c \\ nil) do
+    case {a, b, c} do
+      {_, nil, nil} -> DgraphEx.Query.Filter.filter_1(a)
+      {_,   _, nil} -> DgraphEx.Query.Filter.filter_2(a, b)
+      _             -> DgraphEx.Query.Filter.filter_3(a, b, c)
+    end
   end
 
   def filter_1(%{__struct__: _} = expr) do
@@ -33,6 +30,9 @@ defmodule DgraphEx.Query.Filter do
       expr:   prepare_expr(expr),
       block:  {},
     }
+  end
+  def filter_2(%Query{} = q, %{__struct__: _} = expr) do
+    filter_3(q, expr, {})
   end
   def filter_2(%{__struct__: _} = expr, block) when is_tuple(block) do
     %Filter{
@@ -52,6 +52,9 @@ defmodule DgraphEx.Query.Filter do
     module.render(model)
   end
 
+  defp render_block(%Filter{block: nil}) do
+    ""
+  end
   defp render_block(%Filter{block: {}}) do
     ""
   end

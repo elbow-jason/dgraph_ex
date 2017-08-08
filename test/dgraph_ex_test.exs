@@ -2,7 +2,14 @@ defmodule DgraphExTest do
   use ExUnit.Case
   doctest DgraphEx
   import DgraphEx
+  alias DgraphEx.Query
+  alias Query.{
+    Groupby,
+  }
 
+  test "groupby/1 function" do
+    assert DgraphEx.groupby(:age) == %Groupby{predicate: :age}
+  end
 
   test "render function" do
     result =

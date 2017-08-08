@@ -7,26 +7,38 @@ defmodule DgraphEx.Query do
     Mutation,
     Schema,
     As,
+    Var,
     Func,
     MutationSet,
     Filter,
     Block,
+    # Select,
+    Groupby,
   }
 
+  @bracketed [
+    As,
+    Var,
+    Groupby,
+    Func,
+  ]
+
   defstruct [
-    # blocked: true,
     sequence: [],
-    vars: [],
-    args: [],
-    label: 1,
-    template: nil,
   ]
 
   defmacro __using__(_) do
     quote do
       alias DgraphEx.Query
+      alias Query.{Kwargs}
+
       def query() do
         %Query{}
+      end
+
+      def query(kwargs) when is_list(kwargs) do
+        kwargs
+        |> Kwargs.query
       end
 
       def render(x) do
@@ -46,6 +58,10 @@ defmodule DgraphEx.Query do
     end
   end
 
+  def merge(%Query{sequence: seq1}, %Query{sequence: seq2}) do
+    %Query{sequence: seq2 ++ seq1 }
+  end
+
   def put_sequence(%__MODULE__{sequence: prev_sequence} = d, prefix) when is_list(prefix) do
     %{ d | sequence: prefix ++ prev_sequence }
   end
@@ -53,18 +69,19 @@ defmodule DgraphEx.Query do
     %{ d | sequence: [ item | sequence ]  }
   end
 
-  # def blocked(%__MODULE__{} = d, bool) do
-  #   %{ d | blocked: bool } 
-  # end
-
   def render(%__MODULE__{sequence: seq}) do
     case seq |> Enum.reverse |> assemble do
+      [ %Block{keywords: [{:func, _ } | _ ]} | _ ] = assembled ->
+        assembled
+        |> render_assembled
+        |> with_brackets
+      [ %{__struct__: module} | _ ] = assembled when module in @bracketed ->
+        assembled
+        |> render_assembled
+        |> with_brackets
       assembled when is_list(assembled) ->
-        rendered = 
-          assembled
-          |> Enum.map(fn %{__struct__: module} = model -> module.render(model) end)
-          |> Enum.join(" ")
-        "{\n" <> rendered <> "\n}"
+        assembled
+        |> render_assembled
       %{__struct__: module} = model ->
         module.render(model)
     end
@@ -72,6 +89,16 @@ defmodule DgraphEx.Query do
 
   def render(block) when is_tuple(block) do
     Block.render(block)
+  end
+
+  defp render_assembled(assembled) do
+    assembled
+    |> Enum.map(fn %{__struct__: module} = model -> module.render(model) end)
+    |> Enum.join(" ")
+  end
+
+  defp with_brackets(rendered) do
+    "{\n" <> rendered <> "\n}"
   end
 
   def assemble(%__MODULE__{sequence: sequence}) do
@@ -90,20 +117,14 @@ defmodule DgraphEx.Query do
   def assemble([Schema | _ ] = sequence) do
     assemble(sequence, %Schema{})
   end
-  # as
-  def assemble([%As{identifier: identifier} | rest ]) do
-    assemble(rest, %As{identifier: identifier})
-  end
 
   # func with empty block followed by a filter
   def assemble([%Func{block: {}} = func, %Filter{} = filter | rest]) do
     [ func, filter | assemble(rest) ]
-    |> List.flatten
   end
-  # any func
-  def assemble([%Func{} = func | rest]) do
-    [ func | assemble(rest) ]
-    |> List.flatten
+
+  def assemble([anything | rest]) do
+    [ anything | assemble(rest) ]
   end
 
   # mutation set
@@ -143,10 +164,6 @@ defmodule DgraphEx.Query do
       [alone] -> alone
       x when length(x) > 1 -> x
     end
-  end
-
-  def assemble([Var, %Func{} = func | rest ], %As{block: nil} = as) do
-    [ assemble(rest), %{ as | block: func } ]
   end
 
 end

@@ -1,5 +1,7 @@
 defmodule DgraphEx.Query.Block do
   alias DgraphEx.Query.Block
+  alias DgraphEx.Query
+  alias DgraphEx.Expr.Uid
 
   defstruct [
     label: nil,
@@ -16,24 +18,32 @@ defmodule DgraphEx.Query.Block do
 
   defmacro __using__(_) do
     quote do
+      alias DgraphEx.Query
+      alias Query.{Block}
       def block(label, args) when is_atom(label) and is_list(args) do
-        DgraphEx.Query.Block.new(label, args)
+        Block.new(label, args)
       end
-      def block(label, args) when is_list(args) do
-        DgraphEx.Query.Block.new(args)
+      def block(args) when is_list(args) do
+        Block.new(args)
+      end
+      def block(%Query{} = q, args) when is_list(args) do
+        Query.put_sequence(q, Block.new(args))
+      end
+      def block(%Query{} = q, label, args) do
+        Query.put_sequence(q, Block.new(label, args))
       end
       def aliased(label, value) when is_atom(label) do
-        DgraphEx.Query.Block.aliased(label, value)
+        Block.aliased(label, value)
       end
     end
   end
 
-  def new(kwargs) when length(kwargs) >= 2 do
+  def new(kwargs) when is_list(kwargs) do
     %Block{
       keywords: kwargs,
     }
   end
-  def new(label, kwargs) when is_atom(label) when length(kwargs) >= 2 do
+  def new(label, kwargs) when is_atom(label) and is_list(kwargs) do
     %Block{
       label: label,
       keywords: kwargs,
@@ -43,6 +53,13 @@ defmodule DgraphEx.Query.Block do
     %Block{
       aliased: {key, val}
     }
+  end
+
+  def put_kwarg(%Block{} = b, {k, v}) do
+    put_kwarg(b, k, v)
+  end
+  def put_kwarg(%Block{keywords: kw} = b, key, value) do
+    %{ b | keywords: kw ++ [{key, value}] }
   end
 
   def render(%Block{aliased: {key, %{__struct__: module} = model}}) do
@@ -62,10 +79,22 @@ defmodule DgraphEx.Query.Block do
 
   defp render_keywords(%Block{keywords: keywords}) do
     keywords
+    # |> Enum.reverse
     |> Enum.map(fn
-      {key, %{__struct__: module} = model} when is_atom(key) -> "#{key}: #{module.render(model)}"
+      {key, %{__struct__: module} = model} when is_atom(key) ->
+        {key, model |> prepare_expr |> module.render}
+      {key, value} when is_atom(value) or is_number(value) ->
+        {key, to_string(value)}
     end)
+    |> Enum.map(fn {k, v} -> to_string(k)<>": "<>v end)
     |> Enum.join(", ")
+  end
+
+  def prepare_expr(expr) do
+    case expr do
+      %Uid{} -> expr |> Uid.as_naked
+      _ -> expr
+    end
   end
 
 
