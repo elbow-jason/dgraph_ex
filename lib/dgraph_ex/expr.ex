@@ -28,6 +28,7 @@ defmodule DgraphEx.Expr do
       use Expr.Alloftext
       use Expr.Anyoftext
       use Expr.Regexp
+      use Expr.Has
     end
   end
   

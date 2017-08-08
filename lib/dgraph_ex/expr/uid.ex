@@ -63,10 +63,20 @@ defmodule DgraphEx.Expr.Uid do
   def as_literal(%Uid{} = u) do
     %{ u | type: :literal }
   end
+  
+  def as_naked(%Uid{} = u) do
+    %{ u | type: :naked}
+  end
 
+  def render(%Uid{value: value}) when is_atom(value) do
+    render_expression([value])
+  end
   def render(%Uid{value: value, type: :literal}) when is_binary(value) do
     {:ok, uid_literal} = Util.as_literal(value, :uid)
     uid_literal
+  end
+  def render(%Uid{value: value, type: :naked}) when is_binary(value) do
+    value
   end
   def render(%Uid{value: value, type: :expression}) when (is_atom(value) or is_binary(value)) do
     render_expression([value])
@@ -74,6 +84,7 @@ defmodule DgraphEx.Expr.Uid do
   def render(%Uid{value: value, type: :expression}) when is_list(value) do
     render_expression(value)
   end
+
   defp render_expression(uids) when is_list(uids) do
     args =
       uids

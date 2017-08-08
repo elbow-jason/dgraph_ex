@@ -87,6 +87,9 @@ defmodule DgraphEx.Query.Select do
   defp do_render({key, %Select{} = s}) do
     to_string(key) <> " " <> render(s)
   end
+  defp do_render({key, %Query{} = q}) do
+    to_string(key) <> " " <> Query.render(q)
+  end
   defp do_render({key, %{__struct__: module} = model}) do
     do_render({key, module.render(model)})
   end
