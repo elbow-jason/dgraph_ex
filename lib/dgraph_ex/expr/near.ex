@@ -26,7 +26,7 @@ defmodule DgraphEx.Expr.Near do
     }
   end
 
-  def render(%DgraphEx.Expr.Near{label: label, geo_json: geo_json, distance: distance}) when is_atom(label) and is_list(geo_json) and is_integer(distance) do
+  def render(%Near{label: label, geo_json: geo_json, distance: distance}) when is_atom(label) and is_list(geo_json) and is_integer(distance) do
     "near(" <> render_args([label, geo_json, distance]) <> ")"
   end
 
