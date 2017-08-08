@@ -67,4 +67,22 @@ defmodule DgraphEx.FilterTest do
     """)
   end
 
+  test "filter can take a nested list of complex expressions and connectors" do
+    result =
+      query()
+      |> func(:person, eq(:name, "Jason"))
+      |> filter([:not, gt(:age, 30), :or, lt(:age, 65)])
+      |> select({
+        :name
+      })
+
+    assert render(result) ==  clean_format("""
+      {
+        person(func: eq(name, "Jason")) @filter(NOT gt(age, 30) OR lt(age, 65)) {
+          name
+        }
+      }
+    """)
+  end
+
 end
