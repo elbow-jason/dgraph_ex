@@ -56,10 +56,35 @@ defmodule DgraphEx.Query.Kwargs do
     |> DgraphEx.select(block)
     |> do_query(rest)
   end
-  # defp do_query(q, [{:ignorereflex, true} | rest ]) do
-  #   q
-  #   |> 
-  # end
+  defp do_query(q, [{:ignorereflex, true} | rest ]) do
+    q
+    |> DgraphEx.ignorereflex()
+    |> do_query(rest)
+  end
+  defp do_query(q, [{:ignorereflex, true} | rest ]) do
+    q
+    |> DgraphEx.ignorereflex()
+    |> do_query(rest)
+  end
+  defp do_query(q, [{:cascade, true} | rest ]) do
+    q
+    |> DgraphEx.cascade()
+    |> do_query(rest)
+  end
+  defp do_query(q, [{:normalize, true} | rest ]) do
+    q
+    |> DgraphEx.normalize()
+    |> do_query(rest)
+  end
+  defp do_query(q, [{:directives, directives} | rest]) when is_list(directives) do
+    Enum.reduce(directives, q, fn
+      (:ignorereflex, q_acc) -> DgraphEx.ignorereflex(q_acc)
+      (:normalize,    q_acc) -> DgraphEx.normalize(q_acc)
+      (:cascade,      q_acc) -> DgraphEx.cascade(q_acc)
+    end)
+    |> do_query(rest)
+  end
+
 
 
 end

@@ -26,6 +26,7 @@ defmodule DgraphEx do
   use Query.Func
   use Query.Filter
   use Query.Block
+  use Query.Directive
 
   
 end

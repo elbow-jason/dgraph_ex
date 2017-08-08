@@ -8,11 +8,15 @@ defmodule DgraphEx.Query.Directive do
   defmacro __using__(_) do
     quote do
       alias DgraphEx.Query.Directive
-
+      alias DgraphEx.Query
+  
       def directive(label), do: Directive.new(label)
       def ignorereflex,     do: Directive.new(:ignorereflex)
       def cascade,          do: Directive.new(:cascade)
       def normalize,        do: Directive.new(:normalize)
+      def ignorereflex(%Query{} = q), do: Query.put_sequence(q, ignorereflex())
+      def cascade(%Query{} = q),      do: Query.put_sequence(q, cascade())
+      def normalize(%Query{} = q),    do: Query.put_sequence(q, normalize())
     end
   end
 
