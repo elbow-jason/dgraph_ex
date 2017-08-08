@@ -7,10 +7,12 @@ defmodule DgraphEx.Query do
     Mutation,
     Schema,
     As,
+    Var,
     Func,
     MutationSet,
     Filter,
     Block,
+    Select,
   }
 
   defstruct [
@@ -27,6 +29,9 @@ defmodule DgraphEx.Query do
       alias DgraphEx.Query
       def query() do
         %Query{}
+      end
+
+      def query(kwargs) when is_list(kwargs) do
       end
 
       def render(x) do
@@ -91,19 +96,31 @@ defmodule DgraphEx.Query do
     assemble(sequence, %Schema{})
   end
   # as
-  def assemble([%As{identifier: identifier} | rest ]) do
-    assemble(rest, %As{identifier: identifier})
-  end
+  # def assemble([%As{identifier: identifier} | rest ]) do
+  #   assemble(rest, %As{identifier: identifier})
+  # end
 
   # func with empty block followed by a filter
   def assemble([%Func{block: {}} = func, %Filter{} = filter | rest]) do
     [ func, filter | assemble(rest) ]
-    |> List.flatten
+    # |> List.flatten
   end
   # any func
   def assemble([%Func{} = func | rest]) do
     [ func | assemble(rest) ]
-    |> List.flatten
+    # |> List.flatten
+  end
+  # any select
+  def assemble([%Select{} = sel | rest ]) do
+    [ sel | assemble(rest) ]
+  end
+  # any as
+  def assemble([%As{} = aser | rest ]) do
+    [ aser | assemble(rest) ]
+  end
+  # any block
+  def assemble([%Block{} = b | rest ]) do
+    [ b | assemble(rest) ]
   end
 
   # mutation set
@@ -145,8 +162,8 @@ defmodule DgraphEx.Query do
     end
   end
 
-  def assemble([Var, %Func{} = func | rest ], %As{block: nil} = as) do
-    [ assemble(rest), %{ as | block: func } ]
-  end
+  # def assemble([Var, As, %Func{} = func | rest ], %As{block: nil} = as) do
+  #   [ assemble(rest), %{ as | block: func } ]
+  # end
 
 end

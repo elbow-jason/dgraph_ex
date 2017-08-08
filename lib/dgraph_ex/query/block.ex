@@ -1,5 +1,6 @@
 defmodule DgraphEx.Query.Block do
   alias DgraphEx.Query.Block
+  alias DgraphEx.Query
 
   defstruct [
     label: nil,
@@ -16,14 +17,19 @@ defmodule DgraphEx.Query.Block do
 
   defmacro __using__(_) do
     quote do
+      alias DgraphEx.Query
+      alias Query.{Block}
       def block(label, args) when is_atom(label) and is_list(args) do
-        DgraphEx.Query.Block.new(label, args)
+        Block.new(label, args)
       end
       def block(label, args) when is_list(args) do
-        DgraphEx.Query.Block.new(args)
+        Block.new(args)
+      end
+      def block(%Query{} = q, label, args) do
+        Query.put_sequence(q, Block.new(label, args))
       end
       def aliased(label, value) when is_atom(label) do
-        DgraphEx.Query.Block.aliased(label, value)
+        Block.aliased(label, value)
       end
     end
   end
@@ -43,6 +49,13 @@ defmodule DgraphEx.Query.Block do
     %Block{
       aliased: {key, val}
     }
+  end
+
+  def put_kwarg(%Block{} = b, {k, v}) do
+    put_kwarg(b, k, v)
+  end
+  def put_kwarg(%Block{keywords: kw} = b, key, %{__struct__: _} = value) do
+    %{ b | keywords: [{key, value} | kw] }
   end
 
   def render(%Block{aliased: {key, %{__struct__: module} = model}}) do

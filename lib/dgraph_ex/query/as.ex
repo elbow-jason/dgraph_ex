@@ -4,7 +4,6 @@ defmodule DgraphEx.Query.As do
 
   defstruct [
     identifier: nil,
-    block: nil,
   ]
 
   defmacro __using__(_) do
@@ -13,15 +12,17 @@ defmodule DgraphEx.Query.As do
       def as(%Query{} = q, identifier) do
         Query.put_sequence(q, %Query.As{identifier: identifier})
       end
+      def as(identifier) do
+        %As{identifier: identifier}
+      end
+      def as() do
+        %As{}
+      end
     end
   end
 
-  def render(%As{identifier: id, block: block}) do
-    "#{id} as #{render_block(block)}"
+  def render(%As{identifier: id}) do
+    "#{id} as "
   end
 
-  defp render_block(block) do
-    "#{block}"
-  end
-  
 end
