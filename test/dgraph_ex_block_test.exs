@@ -48,7 +48,7 @@ defmodule DgraphEx.BlockTest do
         film_name: :name@en,
       }
     }
-    assert render(b) == "{ Taraji_films_by_genre_count(func: uid(G), orderdesc: val(G)) { film_budget genres(orderdesc: val(C)) { other_field genre_name: name@en } film_name: name@en } }"
+    assert render(b) ==  "{ Taraji_films_by_genre_count(func: uid(G), orderdesc: val(G)) { film_budget genres(orderdesc: val(C)) { other_field genre_name: name@en } film_name: name@en } }"
   end
 
   test "empty block" do

@@ -3,7 +3,14 @@ defmodule DgraphEx.Query.Kwargs do
   alias Query.{Block}
 
   #as per @srh on dgraph slack (there may be more than these) v0.8.0
-  @executors ~w(func orderasc orderdesc first after offset)a
+  @executors ~w(
+    func
+    orderasc
+    orderdesc
+    first
+    after
+    offset
+  )a
 
   def query(kwargs) when is_list(kwargs) do
     do_query(%Query{}, kwargs)
@@ -11,6 +18,17 @@ defmodule DgraphEx.Query.Kwargs do
 
   defp do_query(q, []) do
     q
+  end
+  defp do_query(q, [ %Query{} = sub_q | rest ]) do
+    q
+    |> Query.merge(sub_q)
+    |> do_query(rest)
+  end
+  defp do_query(q, [ {:as, key}, {:get, %Query{} = get_q} | rest ]) when is_atom(key) do
+    q
+    |> DgraphEx.as(key)
+    |> Query.merge(get_q)
+    |> do_query(rest)
   end
   # as => key => get => func
   defp do_query(q, [ {:as, key}, {:get, :var}, {:func, _} = fun | rest ]) when is_atom(key) do

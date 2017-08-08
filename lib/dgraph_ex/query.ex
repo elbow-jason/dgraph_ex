@@ -24,12 +24,7 @@ defmodule DgraphEx.Query do
   ]
 
   defstruct [
-    blocked: false,
     sequence: [],
-    # vars: [],
-    # args: [],
-    # label: 1,
-    # template: nil,
   ]
 
   defmacro __using__(_) do
@@ -61,6 +56,10 @@ defmodule DgraphEx.Query do
         Query.assemble(x)
       end
     end
+  end
+
+  def merge(%Query{sequence: seq1}, %Query{sequence: seq2}) do
+    %Query{sequence: seq2 ++ seq1 }
   end
 
   def put_sequence(%__MODULE__{sequence: prev_sequence} = d, prefix) when is_list(prefix) do
@@ -96,13 +95,11 @@ defmodule DgraphEx.Query do
     assembled
     |> Enum.map(fn %{__struct__: module} = model -> module.render(model) end)
     |> Enum.join(" ")
-        
   end
 
   defp with_brackets(rendered) do
     "{\n" <> rendered <> "\n}"
   end
-
 
   def assemble(%__MODULE__{sequence: sequence}) do
     sequence

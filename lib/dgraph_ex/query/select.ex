@@ -1,6 +1,6 @@
 defmodule DgraphEx.Query.Select do
   alias DgraphEx.Query
-  alias DgraphEx.Query.Select
+  alias DgraphEx.Query.{Select, As}
 
   defstruct [
     fields: []
@@ -19,7 +19,8 @@ defmodule DgraphEx.Query.Select do
 
 
   @doc """
-  Example
+  Example:
+
     iex> DgraphEx.Query.Select.new({:me, :he, you: :too, they: nil})
     %DgraphEx.Query.Select{fields: [{:they, nil}, {:you, :too}, {:he, nil}, {:me, nil}]}
 
@@ -64,6 +65,9 @@ defmodule DgraphEx.Query.Select do
   def put(%Select{} = s, key, value) when is_atom(key) do
     put(s, {key, value})
   end
+  def put(%Select{fields: prev} = s, %As{} = as) do
+    %{ s | fields: [ as | prev ]}
+  end
 
   def render(%Select{fields: fields}) do
     [" { " | fields |> Enum.reverse |> do_render ]
@@ -93,5 +97,7 @@ defmodule DgraphEx.Query.Select do
   defp do_render({key, %{__struct__: module} = model}) do
     do_render({key, module.render(model)})
   end
-
+  defp do_render(%As{} = as) do
+    As.render(as)
+  end
 end

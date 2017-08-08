@@ -59,7 +59,7 @@ defmodule DgraphEx.Query.Block do
     put_kwarg(b, k, v)
   end
   def put_kwarg(%Block{keywords: kw} = b, key, value) do
-    %{ b | keywords: [{key, value} | kw] }
+    %{ b | keywords: kw ++ [{key, value}] }
   end
 
   def render(%Block{aliased: {key, %{__struct__: module} = model}}) do
@@ -79,6 +79,7 @@ defmodule DgraphEx.Query.Block do
 
   defp render_keywords(%Block{keywords: keywords}) do
     keywords
+    # |> Enum.reverse
     |> Enum.map(fn
       {key, %{__struct__: module} = model} when is_atom(key) ->
         {key, model |> prepare_expr |> module.render}
