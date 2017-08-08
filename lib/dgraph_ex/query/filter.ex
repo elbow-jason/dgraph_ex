@@ -31,6 +31,9 @@ defmodule DgraphEx.Query.Filter do
       block:  {},
     }
   end
+  def filter_2(%Query{} = q, %{__struct__: _} = expr) do
+    filter_3(q, expr, {})
+  end
   def filter_2(%{__struct__: _} = expr, block) when is_tuple(block) do
     %Filter{
       expr:   prepare_expr(expr),
@@ -49,6 +52,9 @@ defmodule DgraphEx.Query.Filter do
     module.render(model)
   end
 
+  defp render_block(%Filter{block: nil}) do
+    ""
+  end
   defp render_block(%Filter{block: {}}) do
     ""
   end

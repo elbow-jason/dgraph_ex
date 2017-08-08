@@ -25,4 +25,14 @@ defmodule DgraphEx.KwargsTest do
     ]
     assert render(q) == "{ person as var(func: eq(name, \"Jason\")) { name age height } }"
   end
+
+  test "aliasing with :filter works" do
+    q = Kwargs.query [
+         get: :person,
+        func: eq(:name, "Jason"),
+      filter: lt(:age, 15),
+      select: { :name, :age, :height, }
+    ]
+    assert render(q) == "{ person(func: eq(name, \"Jason\")) @filter(lt(age, 15)) { name age height } }"
+  end
 end

@@ -106,21 +106,25 @@ defmodule DgraphEx.Query do
     # |> List.flatten
   end
   # any func
-  def assemble([%Func{} = func | rest]) do
-    [ func | assemble(rest) ]
-    # |> List.flatten
-  end
-  # any select
-  def assemble([%Select{} = sel | rest ]) do
-    [ sel | assemble(rest) ]
-  end
-  # any as
-  def assemble([%As{} = aser | rest ]) do
-    [ aser | assemble(rest) ]
-  end
-  # any block
-  def assemble([%Block{} = b | rest ]) do
-    [ b | assemble(rest) ]
+  # def assemble([%Func{} = func | rest]) do
+  #   [ func | assemble(rest) ]
+  #   # |> List.flatten
+  # end
+  # # any select
+  # def assemble([%Select{} = sel | rest ]) do
+  #   [ sel | assemble(rest) ]
+  # end
+  # # any as
+  # def assemble([%As{} = aser | rest ]) do
+  #   [ aser | assemble(rest) ]
+  # end
+  # # any block
+  # def assemble([%Block{} = b | rest ]) do
+  #   [ b | assemble(rest) ]
+  # end
+
+  def assemble([anything | rest]) do
+    [ anything | assemble(rest) ]
   end
 
   # mutation set

@@ -56,5 +56,10 @@ defmodule DgraphEx.Query.Kwargs do
     |> DgraphEx.select(block)
     |> do_query(rest)
   end
+  # defp do_query(q, [{:ignorereflex, true} | rest ]) do
+  #   q
+  #   |> 
+  # end
+
 
 end
