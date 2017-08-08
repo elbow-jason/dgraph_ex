@@ -145,5 +145,40 @@ defmodule DgraphEx.BlockTest do
     """)
   end
 
+  test "block with sub-blocks on fields" do
+    assert query([
+      get: :me,
+      func: allofterms(:name@en, "Steven Spielberg"),
+      select: {[
+        "director.film": query([
+          first: -2,
+          select: {
+            :name@en,
+            :initial_release_date,
+            genre: query([
+              orderasc: :name@en,
+              first: 3,
+              select: {
+                :name@en
+              }
+            ])
+          }
+        ])
+      ]}
+    ]) |> render == clean_format("""
+      {
+        me(func: allofterms(name@en, "Steven Spielberg")) {
+          director.film (first: -2) {
+            name@en
+            initial_release_date
+            genre (orderasc: name@en, first: 3) {
+                name@en
+            }
+          }
+        }
+      }
+    """)
+  end
+
 
 end
