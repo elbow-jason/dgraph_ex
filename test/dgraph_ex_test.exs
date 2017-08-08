@@ -2,6 +2,8 @@ defmodule DgraphExTest do
   use ExUnit.Case
   doctest DgraphEx
   import DgraphEx
+  import TestHelpers
+
   alias DgraphEx.Query
   alias Query.{
     Groupby,
@@ -14,7 +16,8 @@ defmodule DgraphExTest do
   test "render function" do
     result =
       query()
-      |> func(:person, eq(:name, "Jason"), {
+      |> func(:person, eq(:name, "Jason"))
+      |> select({
         :name,
         :address,
       })
@@ -25,7 +28,8 @@ defmodule DgraphExTest do
   test "render function with alias" do
     result =
       query()
-      |> func(:person, eq(:name, "Jason"), {
+      |> func(:person, eq(:name, "Jason"))
+      |> select({
         :address,
         named: :name,
       })
@@ -36,7 +40,8 @@ defmodule DgraphExTest do
   test "render function with count alias" do
     result =
       query()
-      |> func(:person, eq(:name, "Jason"), {
+      |> func(:person, eq(:name, "Jason"))
+      |> select({
         :address,
         names: count(:name),
       })
@@ -46,21 +51,27 @@ defmodule DgraphExTest do
   end
 
   test "render function with string value eq expr" do
-    result =
-      query()
-      |> func(:person, eq(:name, "Jason"), {
+    assert query()
+      |> func(:person, eq(:name, "Jason"))
+      |> select({
         :address,
         :name,
       })
-      |> render
-
-    assert result == "{ person(func: eq(name, \"Jason\")) { address name } }"
+      |> render == clean_format("""
+        {
+          person(func: eq(name, \"Jason\")) {
+            address
+            name
+          }
+        }
+      """)
   end
 
   test "render function with int value eq expr" do
     result =
       query()
-      |> func(:person, eq(:name, 123), {
+      |> func(:person, eq(:name, 123))
+      |> select({
         :address,
         :name,
       })
@@ -72,7 +83,8 @@ defmodule DgraphExTest do
   test "render function with bool value eq expr" do
     result =
       query()
-      |> func(:person, eq(:name, true), {
+      |> func(:person, eq(:name, true))
+      |> select({
         :address,
         :name,
       })
@@ -85,7 +97,8 @@ defmodule DgraphExTest do
     {:ok, test_written_at} = Date.new(2017, 8, 5)
     result =
       query()
-      |> func(:person, eq(:name, test_written_at), {
+      |> func(:person, eq(:name, test_written_at))
+      |> select({
         :address,
         :name,
       })
@@ -97,7 +110,8 @@ defmodule DgraphExTest do
   test "render function with uid literal expression" do
     result =
       query()
-      |> func(:person, uid("0x9"), {
+      |> func(:person, uid("0x9"))
+      |> select({
         :address,
         :name,
       })
@@ -108,7 +122,8 @@ defmodule DgraphExTest do
   test "render function eq with embedded count expr" do
     result =
       query()
-      |> func(:ten_friends, eq(count(:friend), 10, :int), {
+      |> func(:ten_friends, eq(count(:friend), 10, :int))
+      |> select({
         :name,
       })
       |> render
@@ -125,7 +140,8 @@ defmodule DgraphExTest do
     result =
       query()
       |> func(:dirs, uid(:ID))
-      |> filter(gt(val(:total), 100), {
+      |> filter(gt(val(:total), 100))
+      |> select({
         :name@en,
         total_actors: val(:total),
       })

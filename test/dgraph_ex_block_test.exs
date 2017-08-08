@@ -4,6 +4,23 @@ defmodule DgraphEx.BlockTest do
   import DgraphEx
   import TestHelpers
 
+  test "func function renders" do
+    assert render(func(:person, eq(:name, "bleep"))) == clean_format("""
+      person(func: eq(name, \"bleep\"))
+    """)
+  end
+
+  test "query |> func chain renders" do
+    assert render(
+      query()
+      |> func(:someone, eq(:name, "person"))
+    ) == clean_format("""
+      {
+        someone(func: eq(name, \"person\"))
+      }
+    """)
+  end
+
   test "block function renders simple example" do
     assert render({
       block(:jason, func: eq(:name, "Jason")), {

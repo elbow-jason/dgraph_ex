@@ -3,7 +3,6 @@ defmodule DgraphEx.Query.Var do
   # alias Query.{Var, Func}
 
   defstruct [
-    func: %Query.Func{}
   ]
 
   defmacro __using__(_) do

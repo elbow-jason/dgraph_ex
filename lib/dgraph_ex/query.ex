@@ -8,7 +8,7 @@ defmodule DgraphEx.Query do
     Schema,
     As,
     Var,
-    Func,
+    # Func,
     MutationSet,
     Filter,
     Block,
@@ -20,7 +20,7 @@ defmodule DgraphEx.Query do
     As,
     Var,
     Groupby,
-    Func,
+    # Func,
   ]
 
   defstruct [
@@ -106,7 +106,7 @@ defmodule DgraphEx.Query do
     "{\n" <> rendered <> "\n}"
   end
 
-  def assemble(%__MODULE__{sequence: sequence}) do
+  def assemble(%Query{sequence: sequence}) do
     sequence
     |> Enum.reverse
     |> assemble
@@ -123,10 +123,10 @@ defmodule DgraphEx.Query do
     assemble(sequence, %Schema{})
   end
 
-  # func with empty block followed by a filter
-  def assemble([%Func{block: {}} = func, %Filter{} = filter | rest]) do
-    [ func, filter | assemble(rest) ]
-  end
+  # #func with empty block followed by a filter
+  # def assemble([%Block{} = func, %Filter{} = filter | rest]) do
+  #   [ func, filter | assemble(rest) ]
+  # end
 
   def assemble([anything | rest]) do
     [ anything | assemble(rest) ]

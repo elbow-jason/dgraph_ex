@@ -20,12 +20,21 @@ defmodule DgraphEx.Query.Block do
     quote do
       alias DgraphEx.Query
       alias Query.{Block}
+      def func(%Query{} = q, label, %{__struct__: _} = expr) do
+        b = Block.new(label, [func: expr])
+        Query.put_sequence(q, b)
+      end
+      def func(label, %{__struct__: _} = expr) do
+        Block.new(label, [func: expr])
+      end
+      
       def block(label, args) when is_atom(label) and is_list(args) do
         Block.new(label, args)
       end
       def block(args) when is_list(args) do
         Block.new(args)
       end
+
       def block(%Query{} = q, args) when is_list(args) do
         Query.put_sequence(q, Block.new(args))
       end
@@ -82,7 +91,8 @@ defmodule DgraphEx.Query.Block do
     # |> Enum.reverse
     |> Enum.map(fn
       {key, %{__struct__: module} = model} when is_atom(key) ->
-        {key, model |> prepare_expr |> module.render}
+        {key, model} = prepare_expr({key, model})
+        {key, module.render(model)}
       {key, value} when is_atom(value) or is_number(value) ->
         {key, to_string(value)}
     end)
@@ -92,11 +102,12 @@ defmodule DgraphEx.Query.Block do
 
   def prepare_expr(expr) do
     case expr do
+      {:func, %Uid{} = uid} ->
+        {:func, Uid.as_expression(uid)}
       %Uid{} -> expr |> Uid.as_naked
       _ -> expr
     end
   end
-
 
   defp do_render([], []) do
     "{ }"

@@ -23,7 +23,7 @@ defmodule DgraphEx do
   use Query.As
   use Query.Select
   use Query.MutationSet
-  use Query.Func
+  # use Query.Func
   use Query.Filter
   use Query.Block
   use Query.Directive
