@@ -11,14 +11,14 @@ defmodule DgraphEx.Expr.Near do
     quote do
       alias DgraphEx.Expr.Near
 
-      def near(label, geo_json, distance) when is_atom(label) and is_list(geo_json) and is_integer(distance) do
+      def near(label, [x, y] = geo_json, distance) when is_atom(label) and is_float(x) and is_float(y) and is_integer(distance) do
         Near.new(label, geo_json, distance)
       end
     end
   end
 
 
-  def new(label, geo_json, distance) when is_atom(label) and is_list(geo_json) and is_integer(distance) do
+  def new(label, [x, y] = geo_json, distance) when is_atom(label) and is_float(x) and is_float(y) and is_integer(distance) do
     %Near{
       label: label,
       geo_json: geo_json,
@@ -26,7 +26,7 @@ defmodule DgraphEx.Expr.Near do
     }
   end
 
-  def render(%Near{label: label, geo_json: geo_json, distance: distance}) when is_atom(label) and is_list(geo_json) and is_integer(distance) do
+  def render(%Near{label: label, geo_json: [x, y] = geo_json, distance: distance}) when is_atom(label) and is_float(x) and is_float(y) and is_integer(distance) do
     "near(" <> render_args([label, geo_json, distance]) <> ")"
   end
 
