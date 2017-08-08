@@ -34,6 +34,7 @@ defmodule DgraphEx.Expr do
       use Expr.Near
       use Expr.Within
       use Expr.Contains
+      use Expr.Intersects
 
     end
   end
