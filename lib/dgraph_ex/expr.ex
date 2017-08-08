@@ -29,6 +29,7 @@ defmodule DgraphEx.Expr do
       use Expr.Anyoftext
       use Expr.Regexp
       use Expr.Has
+      use Expr.Expand
 
       # geo
       use Expr.Near

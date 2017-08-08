@@ -82,5 +82,8 @@ defmodule DgraphEx.ExprTest do
     assert has(:age) |> Expr.Has.render == "has(age)"
   end
 
+  test "render expand" do
+    assert expand(:_uid_) |> render == "expand(_uid_)"
+  end
 
 end
