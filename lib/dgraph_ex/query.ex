@@ -50,6 +50,7 @@ defmodule DgraphEx.Query do
       defp only_spaces(item) when is_binary(item) do
         item
         |> String.replace(~r/(\s+)/,  " ")
+        |> String.trim
       end
 
       def assemble(x) do
@@ -89,6 +90,10 @@ defmodule DgraphEx.Query do
 
   def render(block) when is_tuple(block) do
     Block.render(block)
+  end
+
+  def render(%{__struct__: module} = model) do
+    module.render(model)
   end
 
   defp render_assembled(assembled) do

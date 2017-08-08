@@ -45,7 +45,15 @@ defmodule DgraphEx.Query.Filter do
   end
 
   def render(%Filter{} = f) do
-    "@filter(#{render_expr(f)}) " <> render_block(f)
+    [
+      "@filter(#{render_expr(f)})",
+      render_block(f),
+    ]
+    |> Enum.filter(fn
+      "" -> nil
+      item -> item
+    end)
+    |> Enum.join(" ")
   end
 
   defp render_expr(%Filter{expr: %{__struct__: module} = model}) do
