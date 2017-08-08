@@ -33,7 +33,8 @@ defmodule DgraphEx.Expr do
       # geo
       use Expr.Near
       use Expr.Within
-    
+      use Expr.Contains
+
     end
   end
   
