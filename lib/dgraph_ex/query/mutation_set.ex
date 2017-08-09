@@ -51,6 +51,13 @@ defmodule DgraphEx.Query.MutationSet do
     ""
   end
   def render(%MutationSet{fields: fields}) when length(fields) > 0 do
-    "set { " <> (fields |> Enum.map(&Field.as_setter/1) |> Enum.join("\n")) <> " }"
+    "set { " <> render_fields(fields) <> " }"
+  end
+
+  defp render_fields(fields) do
+    fields
+    |> Enum.map(&Field.as_setter/1)
+    |> List.flatten
+    |> Enum.join(" ")
   end
 end

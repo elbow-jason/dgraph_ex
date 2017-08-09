@@ -1,5 +1,5 @@
 defmodule DgraphEx.Field do
-  alias DgraphEx.Field
+  alias DgraphEx.{Field, Vertex}
 
   defstruct [
     :subject,
@@ -25,6 +25,7 @@ defmodule DgraphEx.Field do
     :float,
     :password,
     :geo,
+    :uid,
   ]
 
   defmacro field(predicate, type, options \\ []) when type in @allowed_types do
@@ -72,8 +73,8 @@ defmodule DgraphEx.Field do
     fields
     |> Enum.map(fn f -> put_subject(f, subject) end)
   end
-  def put_subject(%Field{} = field, subject) when is_atom(subject) or is_binary(subject) do
-    %{ field | subject: to_string(subject) }
+  def put_subject(%Field{} = field, subject) when is_atom(subject) do
+    %{ field | subject: subject }
   end
 
   def put_object(%Field{type: :int} = field, value) do
@@ -108,6 +109,9 @@ defmodule DgraphEx.Field do
         do_put_object(field, datetime)
     end
   end
+  def put_object(%Field{type: :uid} = field, %{__struct__: _} = model) do
+    do_put_object(field, model)
+  end
 
 
   defp do_put_object(field, value) do
@@ -117,6 +121,24 @@ defmodule DgraphEx.Field do
 
   def as_setter(%Field{object: nil}) do
     ""
+  end
+  def as_setter(%Field{type: :uid, predicate: child_subject, object: %{__struct__: _} = model} = f) do
+    child_fields =
+      child_subject
+      |> Vertex.populate_fields(model)
+      |> Enum.map(&as_setter/1)
+    [ as_setter(%{f | object: child_subject }) | child_fields ]
+  end
+  def as_setter(%Field{type: :uid, subject: subj, predicate: pred, object: obj} = f) when is_atom(obj) do
+    [
+      "_:#{subj}", 
+      "<#{pred}>",
+      "_:#{obj}",
+      render_facets(f),
+      ".",
+    ]
+    |> filter_empty
+    |> Enum.join(" ")
   end
   def as_setter(%Field{object: object} = f) when not is_nil(object) do
     type_anno = type_annotation(f.type)
@@ -164,13 +186,11 @@ defmodule DgraphEx.Field do
     |> Enum.join(" ")
   end
 
-  def as_delete(%Field{type: :uid} = f) do
+  def as_delete(%Field{type: :uid} = _) do
     [
       
     ]
   end
-
-
 
   def dollarify(%Field{} = f) do
      dollarify(to_string(f.subject) <> "_" <> to_string(f.predicate))
@@ -230,6 +250,7 @@ defmodule DgraphEx.Field do
       :float    -> "^^<xs:float>"
       :password -> "^^<pwd:password>"
       :geo      -> "^^<geo:geojson>"
+      :uid      -> ""
     end
   end
 

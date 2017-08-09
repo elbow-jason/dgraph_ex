@@ -10,12 +10,5 @@ defmodule TestHelpers do
 
 end
 
-defmodule DgraphEx.TestPerson do
-  use DgraphEx.Vertex
-
-  vertex :person do
-    field :name, :string
-    field :age,  :int
-  end
-
-end
+Code.load_file("./test/model_company.exs")
+Code.load_file("./test/model_person.exs")

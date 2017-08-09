@@ -5,7 +5,8 @@ defmodule DgraphEx.MutationTest do
   import DgraphEx
   import TestHelpers
 
-  alias DgraphEx.TestPerson, as: Person
+  alias DgraphEx.ModelPerson, as: Person
+  alias DgraphEx.ModelCompany, as: Company
 
   test "render mutation set with a model" do
     assert clean_format("""
@@ -22,8 +23,6 @@ defmodule DgraphEx.MutationTest do
         name: "Bleeeeeeeeeeeigh"
       })
       |> render
-
-
   end
 
   test "render mutation set" do
@@ -40,6 +39,25 @@ defmodule DgraphEx.MutationTest do
     |> render
   end
 
+  test "render mutation set can handle a nested model" do
+    assert clean_format("""
+      mutation {
+        set {
+          _:company <name> "TurfBytes"^^<xs:string> .
+          _:company <owner> _:owner .
+          _:owner <name> "Jason"^^<xs:string> .
+        }
+      }
+    """) ==
+    mutation()
+    |> set(%Company{
+      name: "TurfBytes",
+      owner: %Person{
+        name: "Jason"
+      }
+    })
+    |> render
+  end
 
 
 end
