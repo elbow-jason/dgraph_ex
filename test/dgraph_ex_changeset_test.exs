@@ -94,7 +94,7 @@ defmodule DgraphEx.ChangesetTest do
     assert cs.errors == [age: :invalid_float, name: :invalid_geo]
   end
 
-  test "validate_type can handle a list with atoms in it (look done on model's fields)" do
+  test "validate_type can handle a list with atoms (lookup done on model's fields)" do
     cs =
       %Person{}
       |> Changeset.cast(%{name: :nope, age: :nope}, [:name, :age])
