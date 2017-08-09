@@ -35,9 +35,14 @@ defmodule DgraphEx.Expr.Regexp do
     regex
     |> Regex.source
     |> wrap_slashes
+    |> append_options(regex)
   end
+
   defp wrap_slashes(str) do
     "/"<>str<>"/"
   end
 
+  defp append_options(str, regex) do
+    str<>Regex.opts(regex)
+  end
 end
