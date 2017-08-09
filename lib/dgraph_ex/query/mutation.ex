@@ -19,10 +19,22 @@ defmodule DgraphEx.Query.Mutation do
   defmacro __using__(_) do
     quote do
       alias DgraphEx.Query
-      def mutation(%Query{} = d) do
-        Query.put_sequence(d, Mutation)
+      alias DgraphEx.Query.Mutation
+      def mutation(%Query{} = q) do
+        Query.put_sequence(q, Mutation)
+      end
+      def mutation() do
+        mutation(%Query{})
       end
     end
+  end
+
+  def new() do
+    %Mutation{}
+  end
+
+  def merge_set(%Mutation{set: mset1} = mut, %MutationSet{} = mset2) do
+    %{ mut | set: %MutationSet{fields: mset2.fields ++ mset1.fields } }
   end
 
   def put_set(%Mutation{set: set} = m, %Field{} = f) do
@@ -47,8 +59,8 @@ defmodule DgraphEx.Query.Mutation do
         "" -> false
         item -> item
       end)
-      |> Enum.join("\n")
-    "mutation {\n" <> body <> "\n}"
+      |> Enum.join(" ")
+    "mutation { " <> body <> " }"
   end
 
 end

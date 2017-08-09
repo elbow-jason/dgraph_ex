@@ -9,3 +9,13 @@ defmodule TestHelpers do
   end
 
 end
+
+defmodule DgraphEx.TestPerson do
+  use DgraphEx.Vertex
+
+  vertex :person do
+    field :name, :string
+    field :age,  :int
+  end
+
+end

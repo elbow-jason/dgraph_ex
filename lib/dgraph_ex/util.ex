@@ -63,5 +63,8 @@ defmodule DgraphEx.Util do
   end
 
 
+  def has_function(module, func, arity) do
+    :erlang.function_exported(module, func, arity) 
+  end
 
 end
