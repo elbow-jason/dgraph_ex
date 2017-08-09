@@ -12,7 +12,9 @@ defmodule DgraphEx.Vertex do
     quote do
       Module.register_attribute(__MODULE__, :vertex_fields, accumulate: true)
       unquote(block)
-      @fields (@vertex_fields |> Enum.reverse())
+      @fields (@vertex_fields |> Enum.reverse()) ++ [
+        %Field{type: :uid_literal, predicate: :_uid_}
+      ]
 
       defstruct Enum.map(@fields, fn %Field{predicate: p, default: default} -> {p, default} end)
       def __vertex__(:fields) do
@@ -94,4 +96,5 @@ defmodule DgraphEx.Vertex do
     |> List.flatten
     |> Enum.filter(fn item -> item end)
   end
+
 end
