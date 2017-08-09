@@ -58,6 +58,6 @@ defmodule DgraphEx.Query.MutationSet do
     fields
     |> Enum.map(&Field.as_setter/1)
     |> List.flatten
-    |> Enum.join(" ")
+    |> Enum.join("\n")
   end
 end

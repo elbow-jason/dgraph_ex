@@ -14,6 +14,6 @@ defmodule DgraphEx.Query.MutationSchema do
     ""
   end
   def render(%MutationSchema{fields: fields}) do
-    " schema { " <> (fields |> Enum.map(&Field.as_schema/1) |> Enum.join("\n")) <> " } "
+    "schema { " <> (fields |> Enum.map(&Field.as_schema/1) |> Enum.join("\n")) <> " }"
   end
 end

@@ -14,7 +14,7 @@ defmodule DgraphEx.Query.MutationDelete do
     ""
   end
   def render(%MutationDelete{fields: fields}) do
-    " schema { " <> (fields |> Enum.map(&Field.as_schema/1) |> Enum.join("\n")) <> " } "
+    "schema { " <> (fields |> Enum.map(&Field.as_schema/1) |> Enum.join("\n")) <> " }"
   end
 
 end

@@ -9,15 +9,8 @@ defmodule DgraphEx.MutationTest do
   alias DgraphEx.ModelCompany, as: Company
 
   test "render mutation set with a model" do
-    assert clean_format("""
-      mutation {
-        set {
-          _:person <name> \"Bleeeeeeeeeeeigh\"^^<xs:string> .
-          _:person <age> \"21\"^^<xs:int> .
-        }
-      }
-    """) ==
-      mutation()
+    expected = "mutation { set { _:person <name> \"Bleeeeeeeeeeeigh\"^^<xs:string> .\n_:person <age> \"21\"^^<xs:int> . } }"
+    assert expected == mutation()
       |> set(%Person{
         age: 21,
         name: "Bleeeeeeeeeeeigh"
@@ -40,16 +33,8 @@ defmodule DgraphEx.MutationTest do
   end
 
   test "render mutation set can handle a nested model" do
-    assert clean_format("""
-      mutation {
-        set {
-          _:company <name> "TurfBytes"^^<xs:string> .
-          _:company <owner> _:owner .
-          _:owner <name> "Jason"^^<xs:string> .
-        }
-      }
-    """) ==
-    mutation()
+    expected = "mutation { set { _:company <name> \"TurfBytes\"^^<xs:string> .\n_:company <owner> _:owner .\n_:owner <name> \"Jason\"^^<xs:string> . } }"
+    assert expected == mutation()
     |> set(%Company{
       name: "TurfBytes",
       owner: %Person{
