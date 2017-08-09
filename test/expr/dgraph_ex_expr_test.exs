@@ -86,4 +86,7 @@ defmodule DgraphEx.ExprTest do
     assert expand(:_uid_) |> render == "expand(_uid_)"
   end
 
+  test "render uid_in" do
+    assert uid_in(:foots, "0x123") |> render == "uid_in(foots, 0x123)"
+  end
 end

@@ -10,7 +10,7 @@ defmodule DgraphEx.Query do
     Var,
     # Func,
     MutationSet,
-    Filter,
+    # Filter,
     Block,
     # Select,
     Groupby,
