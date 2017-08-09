@@ -80,8 +80,7 @@ defmodule DgraphEx.Vertex do
     populate_fields(subject, module, model)
   end
   def populate_fields(subject, module, model) do
-    :fields
-    |> module.__vertex__()
+    module.__vertex__(:fields)
     |> Enum.map(fn field ->
       object = Map.get(model, field.predicate, nil)
       if not is_nil(object) do

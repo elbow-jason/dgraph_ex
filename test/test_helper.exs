@@ -9,3 +9,6 @@ defmodule TestHelpers do
   end
 
 end
+
+Code.load_file("./test/model_company.exs")
+Code.load_file("./test/model_person.exs")

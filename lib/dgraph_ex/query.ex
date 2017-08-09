@@ -98,7 +98,9 @@ defmodule DgraphEx.Query do
 
   defp render_assembled(assembled) do
     assembled
-    |> Enum.map(fn %{__struct__: module} = model -> module.render(model) end)
+    |> Enum.map(fn
+      %{__struct__: module} = model -> module.render(model)
+    end)
     |> Enum.join(" ")
   end
 
@@ -136,8 +138,11 @@ defmodule DgraphEx.Query do
   def assemble([Mutation, MutationSet, %Field{} = field | rest], %Mutation{} = mutation) do
     assemble([Mutation, MutationSet | rest], Mutation.put_set(mutation, field))
   end
+  def assemble([Mutation, %MutationSet{} = mset | rest ], %Mutation{} = mutation) do
+    assemble([Mutation | rest], Mutation.merge_set(mutation, mset))
+  end 
   # no more fields; done with MutationSet
-  def assemble([Mutation, MutationSet | rest], %Mutation{} = mutation) do
+  def assemble([Mutation, MutationSet | rest ], %Mutation{} = mutation) do
     assemble([Mutation | rest], mutation)
   end
   
