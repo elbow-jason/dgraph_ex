@@ -44,14 +44,14 @@ defmodule DgraphEx.Query do
       def render(x) do
         x
         |> Query.render
-        |> only_spaces
+        # |> only_spaces
       end
 
-      defp only_spaces(item) when is_binary(item) do
-        item
-        |> String.replace(~r/(\s+)/,  " ")
-        |> String.trim
-      end
+      # defp only_spaces(item) when is_binary(item) do
+      #   item
+      #   |> String.replace(~r/(\s+)/,  " ")
+      #   |> String.trim
+      # end
 
       def assemble(x) do
         Query.assemble(x)
@@ -105,7 +105,7 @@ defmodule DgraphEx.Query do
   end
 
   defp with_brackets(rendered) do
-    "{\n" <> rendered <> "\n}"
+    "{ " <> rendered <> " }"
   end
 
   def assemble(%Query{sequence: sequence}) do

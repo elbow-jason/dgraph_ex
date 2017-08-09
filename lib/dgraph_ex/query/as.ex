@@ -29,7 +29,7 @@ defmodule DgraphEx.Query.As do
     "#{id} as #{module.render(model)}"
   end
   def render(%As{identifier: id}) do
-    "#{id} as "
+    "#{id} as"
   end
 
 end

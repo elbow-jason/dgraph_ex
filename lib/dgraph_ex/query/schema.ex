@@ -20,7 +20,7 @@ defmodule DgraphEx.Query.Schema do
   end
 
   def render(%Schema{fields: fields}) do
-    "schema { "<>(fields |> Enum.map(&Field.as_schema/1) |> Enum.join("\n"))<>"\n} "
+    "schema { "<>(fields |> Enum.map(&Field.as_schema/1) |> Enum.join("\n"))<>" }"
   end
 
 end

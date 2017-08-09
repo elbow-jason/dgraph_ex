@@ -71,9 +71,8 @@ defmodule DgraphEx.Query.Select do
 
 
   def render(%Select{fields: fields}) do
-    [" { " | fields |> Enum.reverse |> do_render ]
+    ["{" | fields |> Enum.reverse |> do_render ] ++ [ "}" ] 
     |> Enum.join(" ")
-    |> Kernel.<>(" } ")
   end
 
   defp do_render(fields) when is_list(fields) do
