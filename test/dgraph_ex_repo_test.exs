@@ -10,7 +10,7 @@ defmodule DgraphEx.RepoTest do
   alias DgraphEx.ModelPerson, as: Person
   alias DgraphEx.ModelCompany, as: Company
 
-  test "Nested models " do
+  test "nested models have their _uid_ fields filled in after being inserted" do
     company = Repo.insert(%Company{
       name: "Flim",
       owner: %Person{
@@ -20,6 +20,14 @@ defmodule DgraphEx.RepoTest do
 
     assert is_binary(company._uid_)
     assert is_binary(company.owner._uid_)
+  end
+
+  test "models have their _uid_ fields filled in after being inserted" do
+    company = Repo.insert(%Company{
+      name: "Flim",
+    })
+
+    assert is_binary(company._uid_)
   end
 
 end

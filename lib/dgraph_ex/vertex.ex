@@ -116,4 +116,10 @@ defmodule DgraphEx.Vertex do
   defp label_string(%{__struct__: module}, nil) do
     module.__vertex__(:default_label) |> to_string
   end
+
+  def get_field(module, predicate) do
+    module.__vertex__(:fields)
+    |> Enum.find(fn f -> f.predicate == predicate end)
+  end
+
 end
