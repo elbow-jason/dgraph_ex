@@ -52,4 +52,22 @@ defmodule DgraphEx.SchemaTest do
     |> clean_format
   end
 
+  test "schema/2 renders a tuple of fields" do
+    assert clean_format("""
+      mutation {
+        schema {
+          name: string @index(exact, terms, trigram, fulltext) .
+          likes: uid @reverse .
+        }
+      }
+    """) ==
+    mutation()
+    |> schema({
+      field(:name,  :string, index: [:exact, :terms, :trigram, :fulltext]),
+      field(:likes, :uid, reverse: true),
+    })
+    |> render
+    |> clean_format
+  end
+
 end
