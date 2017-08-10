@@ -1,9 +1,16 @@
 defmodule DgraphEx.Schema do
   alias DgraphEx.{Schema, Query, Field, Mutation}
 
+  @naked_fields [
+    :type,
+    :index,
+    :reverse,
+    :tokenizer,
+  ]
+
   defstruct [
     context: nil,
-    fields: [],
+    fields:  [],
   ]
 
   defmacro __using__(_) do
@@ -23,14 +30,24 @@ defmodule DgraphEx.Schema do
         })
       end
       def schema(block) when is_tuple(block) do
+        fields =
+          block
+          |> Tuple.to_list
+          |> Enum.map(fn
+            %Field{predicate: pred} -> pred
+            pred when is_atom(pred) -> pred
+          end)
         %Schema{
-          fields: block |> Tuple.to_list,
+          fields: fields,
         }
       end
-      def schema(%{__struct__: module} = model) do
-        if Vertex.is_model?(model) do
+      def schema(module) when is_atom(module) do
+        if Vertex.is_model?(module) do
+          fields = 
+            module.__vertex__(:fields)
+            |> Enum.map(fn %Field{predicate: pred} -> pred end)
           %Schema{
-            fields: module.__vertex__(:fields)
+            fields: fields, 
           }
         else
           raise %ArgumentError{
@@ -38,31 +55,26 @@ defmodule DgraphEx.Schema do
           }
         end
       end
+      def schema(%{__struct__: module}) do
+        schema(module)
+      end
     end
   end
 
-  def put_field(%Schema{fields: prev_fields} = schema, %Field{} = field) do
-    %{ schema | fields: [ field | prev_fields ] }
+
+  def render(%Schema{fields: [], context: nil} = schema) do
+    "schema {\n#{@naked_fields |> Enum.join("\n")}\n}"
+  end
+  def render(%Schema{fields: fields, context: nil}) when length(fields) > 0 do
+    "schema(pred: [#{fields |> Enum.join(", ")}]) {\n#{@naked_fields |> Enum.join("\n")}\n}"
+  end
+  def render(%Schema{fields: fields, context: :mutation}) do
+    rendered =
+      fields
+      |> Enum.map(&Field.as_schema/1)
+      |> Enum.join("\n")
+    "schema {\n" <> rendered <> "\n}"
   end
 
-  def render(%Schema{} = schema) do
-    "schema { #{render_fields(schema)} }"
-  end
-
-  defp render_fields(%Schema{fields: fields, context: context}) do
-    fields
-    |> Enum.map(fn f -> render_field(f, context) end)
-    |> Enum.join("\n")
-  end
-
-  defp render_field(predicate, _context = nil) when is_atom(predicate) do
-    to_string(predicate)
-  end
-  defp render_field(%Field{predicate: predicate}, _context = nil) do
-    render_field(predicate, nil)
-  end
-  defp render_field(%Field{} = f, :mutation) do
-    Field.as_schema(f)
-  end
 
 end
