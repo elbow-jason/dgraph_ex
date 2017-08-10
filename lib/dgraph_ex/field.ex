@@ -28,27 +28,14 @@ defmodule DgraphEx.Field do
     :uid,
   ]
 
-  defmacro field(predicate, type, options \\ []) when type in @allowed_types do
+
+  @doc """
+  This macro is for use inside vertex/2 macro blocks (for field definitions).
+  """
+  defmacro field(predicate, type, options \\ []) do
     quote do
-      options = unquote(options)
-      facets = options[:facets]
-      indices = options[:index]
-      count = !!options[:count]
-      default = options[:default]
-      virtual = !!options[:virtual]
-      reverse = !!options[:reverse]
-      model = options[:model]
-      field = %Field{
-        predicate: unquote(predicate),
-        type: unquote(type),
-        index: indices,
-        facets: facets,
-        count: count,
-        default: default,
-        virtual: virtual,
-        model: model,
-        reverse: reverse,
-      }
+      alias DgraphEx.{Field}
+      field = Field.new(unquote(predicate), unquote(type), unquote(options))
       Module.put_attribute(__MODULE__, :vertex_fields, field)
     end
   end
@@ -57,25 +44,40 @@ defmodule DgraphEx.Field do
     quote do
       alias DgraphEx.{Query, Field, Mutation}
       def field(%Mutation{sequence: [ first | rest ]} = m, subject, predicate, object, type) do
-        new_field = %Field{
-          subject:    subject,
-          predicate:  predicate,
-          object:     object,
-          type:       type,
-        }
+        new_field = 
+          Field.new(predicate, type)
+          |> Field.put_subject(subject)
+          |> Field.put_object(object)
         first = %{ first | fields: [ new_field | first.fields ] }
         %{ m | sequence: [ first | rest ]}
       end
       def field(%Query{} = q, subject, predicate, object, type) do
-        q
-        |> Query.put_sequence(%Field{
-          subject:    subject,
-          predicate:  predicate,
-          object:     object,
-          type:       type,
-        })
+        new_field = 
+          Field.new(predicate, type)
+          |> Field.put_subject(subject)
+          |> Field.put_object(object)
+        Query.put_sequence(q, new_field)
       end
+
+      def field(predicate, type, options \\ []) when is_atom(predicate) and is_atom(type) and is_list(options) do
+        Field.new(predicate, type, options)
+      end
+
     end
+  end
+
+  def new(predicate, type, options \\ []) when is_atom(predicate) and type in @allowed_types and is_list(options) do
+      %Field{
+        predicate:  predicate,
+        type:       type,
+        index:      options[:index],
+        facets:     options[:facets],
+        count:      !!options[:count],
+        default:    options[:default],
+        virtual:    !!options[:virtual],
+        reverse:    !!options[:reverse],
+        model:      options[:model],
+      }
   end
 
   def put_subject(fields, subject) when is_list(fields) do

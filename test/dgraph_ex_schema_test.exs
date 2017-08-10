@@ -18,4 +18,20 @@ defmodule DgraphEx.SchemaTest do
     |> render
     |> clean_format
   end
+
+  test "schema/1 can render a tuple of fields" do
+    assert clean_format("""
+      schema {
+        name
+        age
+      }
+    """) == schema({
+      field(:name, :string),
+      :age,
+    })
+    |> render
+    |> clean_format
+  end
+
+
 end
