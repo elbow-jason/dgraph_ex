@@ -1,6 +1,6 @@
-defmodule DgraphEx.Query.MutationDelete do
-  alias DgraphEx.{Query, Field}
-  alias Query.{MutationDelete}
+defmodule DgraphEx.Mutation.MutationDelete do
+  alias DgraphEx.{Mutation, Field}
+  alias Mutation.{MutationDelete}
 
   defstruct [
     fields: []
@@ -14,7 +14,7 @@ defmodule DgraphEx.Query.MutationDelete do
     ""
   end
   def render(%MutationDelete{fields: fields}) do
-    "schema { " <> (fields |> Enum.map(&Field.as_schema/1) |> Enum.join("\n")) <> " }"
+    "delete { " <> (fields |> Enum.map(&Field.as_schema/1) |> Enum.join("\n")) <> " }"
   end
 
 end

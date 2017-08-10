@@ -1,5 +1,5 @@
 defmodule DgraphEx.Field do
-  alias DgraphEx.{Field, Vertex}
+  alias DgraphEx.{Field, Vertex, }
 
   defstruct [
     :subject,
@@ -47,6 +47,7 @@ defmodule DgraphEx.Field do
         default: default,
         virtual: virtual,
         model: model,
+        reverse: reverse,
       }
       Module.put_attribute(__MODULE__, :vertex_fields, field)
     end
@@ -54,8 +55,17 @@ defmodule DgraphEx.Field do
 
   defmacro __using__(_) do
     quote do
-      alias DgraphEx.{Query, Field}
-
+      alias DgraphEx.{Query, Field, Mutation}
+      def field(%Mutation{sequence: [ first | rest ]} = m, subject, predicate, object, type) do
+        new_field = %Field{
+          subject:    subject,
+          predicate:  predicate,
+          object:     object,
+          type:       type,
+        }
+        first = %{ first | fields: [ new_field | first.fields ] }
+        %{ m | sequence: [ first | rest ]}
+      end
       def field(%Query{} = q, subject, predicate, object, type) do
         q
         |> Query.put_sequence(%Field{
@@ -65,7 +75,6 @@ defmodule DgraphEx.Field do
           type:       type,
         })
       end
-
     end
   end
 
@@ -173,6 +182,9 @@ defmodule DgraphEx.Field do
     {dollarify(f), f.object, f.type}
   end
 
+  def as_schema(%Field{predicate: :_uid_}) do
+    nil
+  end
   def as_schema(%Field{} = f) do
     [
       to_string(f.predicate) <> ":",

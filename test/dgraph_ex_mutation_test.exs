@@ -1,6 +1,6 @@
 defmodule DgraphEx.MutationTest do
   use ExUnit.Case
-  doctest DgraphEx.Query.Mutation
+  doctest DgraphEx.Mutation
 
   import DgraphEx
   import TestHelpers
@@ -44,5 +44,18 @@ defmodule DgraphEx.MutationTest do
     |> render
   end
 
+  test "render mutation schema given a model" do
+    assert clean_format("""
+      mutation {
+        schema {
+          name: string @index(exact, terms) .
+          owner: uid @reverse .
+        }
+    }
+    """) == mutation()
+    |> schema(Company)
+    |> render
+    |> clean_format
+  end
 
 end

@@ -1,9 +1,13 @@
 defmodule DgraphEx.Repo do
-  alias DgraphEx.{Query, Vertex}
+  alias DgraphEx.{Query, Mutation, Vertex}
 
-  def request(%Query{} = q) do
-    q
-    |> DgraphEx.assemble
+  @allowed_modules [
+    Query,
+    Mutation,
+  ]
+
+  def request(%{__struct__: module} = model) when module in @allowed_modules do
+    model
     |> DgraphEx.render
     |> DgraphEx.Client.send
   end

@@ -23,7 +23,6 @@ defmodule DgraphEx.Types do
 
     iex> DgraphEx.Types.validate(:geo, nil)
     {:error, :invalid_geo}
-
   
   """
   def validate(type, nil) do

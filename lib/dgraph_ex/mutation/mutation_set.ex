@@ -1,5 +1,5 @@
-defmodule DgraphEx.Query.MutationSet do
-  alias DgraphEx.Query.MutationSet
+defmodule DgraphEx.Mutation.MutationSet do
+  alias DgraphEx.Mutation.MutationSet
   alias DgraphEx.Field
 
   defstruct [
@@ -8,11 +8,11 @@ defmodule DgraphEx.Query.MutationSet do
 
   defmacro __using__(_) do
     quote do
-      alias DgraphEx.{Query, Vertex}
-      alias Query.MutationSet
+      alias DgraphEx.{Mutation, Vertex}
+      alias Mutation.MutationSet
 
-      def set(%Query{} = q) do
-        Query.put_sequence(q, MutationSet)
+      def set(%Mutation{} = mut) do
+        Mutation.put_sequence(mut, %MutationSet{})
       end
 
       defp raise_vertex_only_error do
@@ -21,18 +21,18 @@ defmodule DgraphEx.Query.MutationSet do
         }
       end
 
-      def set(%Query{} = q, %{__struct__: module} = model) do
+      def set(%Mutation{} = mut, %{__struct__: module} = model) do
         if DgraphEx.Util.has_function(module, :__vertex__, 1) do
           subject = module.__vertex__(:default_label)
-          set(q, subject, model)
+          set(mut, subject, model)
         else
           raise_vertex_only_error()
         end
       end
 
-      def set(%Query{} = q, subject, %{__struct__: module} = model) when is_atom(subject) do
+      def set(%Mutation{} = mut, subject, %{__struct__: module} = model) when is_atom(subject) do
         if DgraphEx.Util.has_function(module, :__vertex__, 1) do
-          Query.put_sequence(q, %MutationSet{
+          Mutation.put_sequence(mut, %MutationSet{
             fields: Vertex.populate_fields(subject, module, model)
           })
         else
@@ -45,6 +45,10 @@ defmodule DgraphEx.Query.MutationSet do
 
   def put_field(%MutationSet{fields: prev_fields} = set, %Field{} = field) do
     %{ set | fields: [ field | prev_fields ]}
+  end
+
+  def merge(%MutationSet{fields: fields1} = mset1, %MutationSet{fields: fields2}) do
+    %{ mset1 | fields: [ fields1 ++ fields2 ] }
   end
 
   def render(%MutationSet{fields: []}) do

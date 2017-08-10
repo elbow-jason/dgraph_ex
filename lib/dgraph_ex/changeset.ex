@@ -122,7 +122,7 @@ defmodule DgraphEx.Changeset do
         put_error(cs, {field_name, :invalid_type})
     end
   end
-  def validate_type(%Cs{module: module, changes: changes} = cs, typed_fields) when is_list(typed_fields) do
+  def validate_type(%Cs{module: module} = cs, typed_fields) when is_list(typed_fields) do
     type_tuples(module, typed_fields)
     |> Enum.reduce(cs, fn
       ({field_name, typing}, acc_cs) when is_atom(typing) or is_list(typing) ->
