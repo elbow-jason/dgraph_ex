@@ -9,6 +9,13 @@ defmodule DgraphEx.Mixfile do
       build_embedded: Mix.env == :prod,
       start_permanent: Mix.env == :prod,
       deps: deps(),
+      test_coverage: [tool: ExCoveralls],
+      preferred_cli_env: [
+        "coveralls": :test,
+        "coveralls.detail": :test,
+        "coveralls.post": :test,
+        "coveralls.html": :test,
+      ]
     ]
   end
 
@@ -36,6 +43,8 @@ defmodule DgraphEx.Mixfile do
     [
       {:httpoison, "~> 0.12.0"},
       {:poison, "~> 3.1"},
+      {:excoveralls, "~> 0.7.2", only: :test},
     ]
   end
+
 end

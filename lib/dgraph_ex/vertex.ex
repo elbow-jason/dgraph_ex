@@ -45,24 +45,6 @@ defmodule DgraphEx.Vertex do
       end
     end
   end
-  
-
-  def schema(module) when is_atom(module) do
-    fields =
-      :fields
-      |> module.__vertex__() 
-      |> Enum.map(fn %Field{} = f -> Field.as_schema(f) end)
-    "schema {\n\t" <> (fields |> Enum.join("\n\t")) <> "\n}"
-  end
-
-  def mutation(items) when is_list(items) do
-    items
-    |> Enum.join("\n\t")
-    |> mutation
-  end
-  def mutation(item) when is_binary(item) do
-    "mutation { \n" <> item <> "\n}"
-  end
 
   def as_setter(subject, model = %{__struct__: _}) do
     subject
@@ -70,13 +52,11 @@ defmodule DgraphEx.Vertex do
     |> Enum.map(&Field.as_setter/1)
   end
 
-  
   def as_variables(subject, model) do
     subject
     |> populate_fields(model)
     |> Enum.map(fn field -> Field.as_variables(field) end)
   end
-
 
   def populate_fields(subject, model = %{__struct__: module}) do
     populate_fields(subject, module, model)
