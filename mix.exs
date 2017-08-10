@@ -5,7 +5,7 @@ defmodule DgraphEx.Mixfile do
     [
       app: :dgraph_ex,
       version: "0.1.0",
-      elixir: "~> 1.5.0",
+      elixir: "~> 1.4.0",
       build_embedded: Mix.env == :prod,
       start_permanent: Mix.env == :prod,
       deps: deps(),

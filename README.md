@@ -1,4 +1,10 @@
-# DgraphEx [![Build Status](https://travis-ci.org/elbow-jason/dgraph_ex.svg?branch=master)](https://travis-ci.org/elbow-jason/dgraph_ex)
+# DgraphEx 
+[![Build Status](https://travis-ci.org/elbow-jason/dgraph_ex.svg?branch=master)](https://travis-ci.org/elbow-jason/dgraph_ex) [![Hex Version][hex-img]][hex] [![License][license-img]][license]
+
+[hex-img]: https://img.shields.io/hexpm/v/dgraph_ex.svg
+[hex]: https://hex.pm/packages/dgraph_ex
+[license-img]: http://img.shields.io/badge/license-MIT-brightgreen.svg
+[license]: http://opensource.org/licenses/MIT
 
 An elixir database wrapper for dgraph database.
 
