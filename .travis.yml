@@ -10,6 +10,7 @@ env:
   - MIX_ENV=test
 
 before_install:
-  - sudo curl https://get.dgraph.io -sSf | bash && dgraph
+  - sudo curl https://get.dgraph.io -sSf | bash
+  - "& dgraph"
 
 script: mix coveralls.travis
