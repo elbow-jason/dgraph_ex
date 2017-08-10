@@ -122,4 +122,14 @@ defmodule DgraphEx.Vertex do
     |> Enum.find(fn f -> f.predicate == predicate end)
   end
 
+  def is_model?(%{__struct__: module}) do
+    is_model?(module)
+  end
+  def is_model?(module) when is_atom(module) do
+    DgraphEx.Util.has_function(module, :__vertex__, 1)
+  end
+  def is_model?(_) do
+    false
+  end
+
 end

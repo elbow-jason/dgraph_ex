@@ -8,7 +8,8 @@ defmodule DgraphEx.Schema do
 
   defmacro __using__(_) do
     quote do
-      alias DgraphEx.Query
+      alias DgraphEx.{Query, Vertex}
+
       def schema(%Mutation{} = mut, module) when is_atom(module) do
         Mutation.put_sequence(mut, %Schema{
           context: :mutation,
@@ -21,31 +22,47 @@ defmodule DgraphEx.Schema do
           fields: block |> Tuple.to_list,
         })
       end
-      def schema(%Query{} = q, block) when is_tuple(block) do
-        Query.put_sequence(q, %Schema{
-          context: :naked,
+      def schema(block) when is_tuple(block) do
+        %Schema{
           fields: block |> Tuple.to_list,
-        })
+        }
+      end
+      def schema(%{__struct__: module} = model) do
+        if Vertex.is_model?(model) do
+          %Schema{
+            fields: module.__vertex__(:fields)
+          }
+        else
+          raise %ArgumentError{
+            message: "schema/1 structs can only be Vertex models. #{module} does not use DgraphEx.Vertex"
+          }
+        end
       end
     end
-  end
-
-  def as_getter(%Schema{} = s) do
-    %{ s | context: :naked }
-  end
-  def as_mutation(%Schema{} = s) do
-    %{ s | context: :mutation }
   end
 
   def put_field(%Schema{fields: prev_fields} = schema, %Field{} = field) do
     %{ schema | fields: [ field | prev_fields ] }
   end
 
-  def render(%Schema{fields: fields, context: :naked}) do
-    "schema { "<>(fields |> Enum.map(fn f -> f.predicate end) |> Enum.join("\n"))<>" }"
+  def render(%Schema{} = schema) do
+    "schema { #{render_fields(schema)} }"
   end
-  def render(%Schema{fields: fields, context: :mutation}) do
-    "schema { "<>(fields |> Enum.map(&Field.as_schema/1) |> Enum.join("\n"))<>" }"
+
+  defp render_fields(%Schema{fields: fields, context: context}) do
+    fields
+    |> Enum.map(fn f -> render_field(f, context) end)
+    |> Enum.join("\n")
+  end
+
+  defp render_field(predicate, _context = nil) when is_atom(predicate) do
+    to_string(predicate)
+  end
+  defp render_field(%Field{predicate: predicate}, _context = nil) do
+    render_field(predicate, nil)
+  end
+  defp render_field(%Field{} = f, :mutation) do
+    Field.as_schema(f)
   end
 
 end
