@@ -56,18 +56,33 @@ defmodule DgraphEx.SchemaTest do
     assert clean_format("""
       mutation {
         schema {
-          name: string @index(exact, terms, trigram, fulltext) .
+          name: string @index(exact, term, trigram, fulltext) .
           likes: uid @reverse .
         }
       }
     """) ==
     mutation()
     |> schema({
-      field(:name,  :string, index: [:exact, :terms, :trigram, :fulltext]),
+      field(:name, :string, index: [:exact, :term, :trigram, :fulltext]),
       field(:likes, :uid, reverse: true),
     })
     |> render
     |> clean_format
   end
 
+  test "schema/2 renders a Vertex model's module" do
+    assert clean_format("""
+      mutation {
+        schema {
+          name: string .
+          age: int .
+          works_at: uid .
+        }
+      }
+    """) ==
+    mutation()
+    |> schema(Person)
+    |> render
+    |> clean_format
+  end
 end

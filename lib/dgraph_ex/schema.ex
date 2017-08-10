@@ -17,11 +17,20 @@ defmodule DgraphEx.Schema do
     quote do
       alias DgraphEx.{Query, Vertex}
 
+      defp raise_non_vertex_module(module) do
+        raise %ArgumentError{
+          message: "schema only responds to Vertex models. #{module} does not use DgraphEx.Vertex"
+        }
+      end
       def schema(%Mutation{} = mut, module) when is_atom(module) do
-        Mutation.put_sequence(mut, %Schema{
-          context: :mutation,
-          fields: module.__vertex__(:fields),
-        })
+        if Vertex.is_model?(module) do
+          Mutation.put_sequence(mut, %Schema{
+            context: :mutation,
+            fields: module.__vertex__(:fields),
+          })
+        else
+          raise_non_vertex_module(module)
+        end
       end
       def schema(%Mutation{} = mut, block) when is_tuple(block) do
         Mutation.put_sequence(mut, %Schema{
@@ -50,9 +59,7 @@ defmodule DgraphEx.Schema do
             fields: fields, 
           }
         else
-          raise %ArgumentError{
-            message: "schema/1 structs can only be Vertex models. #{module} does not use DgraphEx.Vertex"
-          }
+          raise_non_vertex_module(module)
         end
       end
       def schema(%{__struct__: module}) do
@@ -62,7 +69,7 @@ defmodule DgraphEx.Schema do
   end
 
 
-  def render(%Schema{fields: [], context: nil} = schema) do
+  def render(%Schema{fields: [], context: nil}) do
     "schema {\n#{@naked_fields |> Enum.join("\n")}\n}"
   end
   def render(%Schema{fields: fields, context: nil}) when length(fields) > 0 do

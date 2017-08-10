@@ -25,7 +25,4 @@ defmodule DgraphEx.Repo do
     end
   end
 
-
-  
-
 end
