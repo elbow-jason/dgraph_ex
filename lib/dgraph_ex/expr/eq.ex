@@ -32,7 +32,7 @@ defmodule DgraphEx.Expr.Eq do
     eq(count(predicate), value)
     eq(predicate, [val1, val2, ..., valN])
   """
-  def render(%Eq{label: label, value: items, type: type}) when is_list(items) and is_atom(label) do
+  def render(%Eq{label: label, value: items}) when is_list(items) and is_atom(label) do
     literal_value = Poison.encode!(items)
     label
     |> Util.as_rendered
