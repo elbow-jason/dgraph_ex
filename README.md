@@ -1,4 +1,4 @@
-# DgraphEx
+# DgraphEx [![Build Status](https://travis-ci.org/elbow-jason/dgraph_ex.svg?branch=master)](https://travis-ci.org/elbow-jason/dgraph_ex)
 
 An elixir database wrapper for dgraph database.
 
