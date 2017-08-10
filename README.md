@@ -6,7 +6,17 @@ This is a work in progress.
 
 ## Usage 
 
-WIP
+#### define a model
+
+#### mutate the schema
+
+#### insert a model
+
+#### update a model
+
+#### find a model
+
+#### find anything
 
 ## Installation
 
