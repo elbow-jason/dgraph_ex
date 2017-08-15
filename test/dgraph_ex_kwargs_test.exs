@@ -194,4 +194,21 @@ defmodule DgraphEx.KwargsTest do
       }
     """)
   end
+
+  test "mutation schema works" do
+    assert mutation([
+      schema: Person
+    ])
+    |> render
+    |> clean_format == clean_format("""
+      mutation {
+        schema {
+          name: string .
+          age: int .
+          works_at: uid .
+        }
+      }
+    """)
+  end
+
 end

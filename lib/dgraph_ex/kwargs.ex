@@ -124,9 +124,15 @@ defmodule DgraphEx.Kwargs do
   def do_mutation(m, []) do
     m
   end
-  def do_mutation(m, [{:set, block}]) do
+  def do_mutation(m, [{:set, block} | rest ]) do
     m
     |> DgraphEx.set(block)
+    |> do_mutation(rest)
+  end
+  def do_mutation(m, [{:schema, module} | rest ]) do
+    m
+    |> DgraphEx.schema(module)
+    |> do_mutation(rest)
   end
 
 end
