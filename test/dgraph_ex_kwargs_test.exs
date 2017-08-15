@@ -5,7 +5,8 @@ defmodule DgraphEx.KwargsTest do
   import DgraphEx
   import TestHelpers
 
-
+  alias DgraphEx.ModelPerson, as: Person
+  
   test "a query call returns a query" do
     assert query([]) == %DgraphEx.Query{}
   end
@@ -185,10 +186,10 @@ defmodule DgraphEx.KwargsTest do
     ])
     |> render
     |> clean_format == clean_format("""
-      {
-        @groupby(age) {
-          name
-          age
+      mutation {
+        set {
+          _:person <name> \"jason\"^^<xs:string> .
+          _:person <age> \"33\"^^<xs:int> .
         }
       }
     """)
