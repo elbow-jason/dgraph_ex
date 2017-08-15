@@ -107,12 +107,28 @@ defmodule DgraphEx.MutationTest do
     |> clean_format == clean_format("""
       mutation {
         delete {
-          <3456> <name> \"Wimu\" .
           <1234> <name> \"Jason\" .
+          <3456> <name> \"Wimu\" .
         }
       }
     """)
   end
 
+  test "render mutation delete can take a Field as the second arg" do
+    assert mutation()
+    |> delete(field(uid("1235"), :name, "Jason"))
+    |> delete(field(uid("1234"), :name, "Jason"))
+    |> render
+    |> clean_format == clean_format("""
+      mutation {
+        delete {
+          <1235> <name> \"Jason\" .
+        }
+        delete {
+          <1234> <name> \"Jason\" .
+        }
+      }
+    """)
+  end
 
 end

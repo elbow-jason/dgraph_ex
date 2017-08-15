@@ -28,6 +28,9 @@ defmodule DgraphEx.Mutation.MutationDelete do
       Field.delete_field(subject, predicate, object)
     Mutation.put_sequence(mut, %MutationDelete{} |> put_field(field))
   end
+  def delete(%Mutation{} = mut, %Field{} = field) do
+    Mutation.put_sequence(mut, %MutationDelete{} |> put_field(field))
+  end
 
   def put_field(%MutationDelete{} = md, fields) when is_list(fields) do
     Enum.reduce(fields, md, fn (field, acc_md) -> put_field(acc_md, field) end)
@@ -40,7 +43,13 @@ defmodule DgraphEx.Mutation.MutationDelete do
     ""
   end
   def render(%MutationDelete{fields: fields}) do
-    "delete { " <> (fields |> Enum.map(&Field.as_delete/1) |> Enum.join("\n")) <> " }"
+    "delete { " <> render_fields(fields) <> " }"
+  end
+  defp render_fields(fields) do
+    fields
+    |> Enum.reverse
+    |> Enum.map(&Field.as_delete/1)
+    |> Enum.join("\n")
   end
 
 end

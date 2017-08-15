@@ -47,6 +47,7 @@ defmodule DgraphEx.Mutation do
   def render(%Mutation{sequence: seq}) do
     body =
       seq
+      |> Enum.reverse
       |> Enum.map(fn
         %{__struct__: module} = model -> module.render(model)
       end)

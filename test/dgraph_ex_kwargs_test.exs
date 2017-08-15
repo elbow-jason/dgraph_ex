@@ -211,4 +211,66 @@ defmodule DgraphEx.KwargsTest do
     """)
   end
 
+  test "mutation delete works for a field" do
+    assert mutation([
+      delete: field(uid("1234567"), "*", "*")
+    ])
+    |> render
+    |> clean_format == clean_format("""
+      mutation {
+        delete {
+          <1234567> * * .
+        }
+      }
+    """)
+  end
+
+
+  test "mutation delete works for tuple of fields " do
+    assert mutation([
+      delete: {
+        field(uid("1234567"), "*", "*"),
+        field(uid("1234567890"), "*", "*"),
+      }
+    ])
+    |> render
+    |> clean_format == clean_format("""
+      mutation {
+        delete {
+          <1234567> * * .
+          <1234567890> * * .
+        }
+      }
+    """)
+  end
+
+  test "a complex mutation" do
+    assert mutation([
+      delete: {
+        field(uid("0x123"), :name, "Jason"),
+      },
+      set: %Person{
+        name: "Not Jason",
+      },
+      schema: Person,
+    ])
+    |> render
+    |> clean_format == clean_format("""
+      mutation {
+        delete {
+          <0x123> <name> \"Jason\" .
+        }
+        set {
+          _:person <name> \"Not Jason\"^^<xs:string> .
+        }
+        schema {
+          name: string .
+          age: int .
+          works_at: uid .
+        }
+      }
+    """)
+  end
+  
+
 end

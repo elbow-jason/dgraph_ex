@@ -1,5 +1,5 @@
 defmodule DgraphEx.Kwargs do
-  alias DgraphEx.{Query, Mutation, Kwargs}
+  alias DgraphEx.{Query, Mutation, Kwargs, Field}
   alias Query.{Block}
 
   #as per @srh on dgraph slack (there may be more than these) v0.8.0
@@ -134,5 +134,11 @@ defmodule DgraphEx.Kwargs do
     |> DgraphEx.schema(module)
     |> do_mutation(rest)
   end
+  def do_mutation(m, [{:delete, item} | rest ]) do
+    m
+    |> DgraphEx.delete(item)
+    |> do_mutation(rest)
+  end
+
 
 end
