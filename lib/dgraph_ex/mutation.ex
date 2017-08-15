@@ -23,10 +23,14 @@ defmodule DgraphEx.Mutation do
 
   defmacro __using__(_) do
     quote do
-      alias Dgraph.Mutation
+      alias DgraphEx.{Mutation, Kwargs}
 
       def mutation() do
         %Mutation{}
+      end
+
+      def mutation(kwargs) when is_list(kwargs) do
+        Kwargs.mutation(kwargs)
       end
 
     end

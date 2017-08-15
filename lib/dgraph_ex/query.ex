@@ -22,21 +22,18 @@ defmodule DgraphEx.Query do
 
   defmacro __using__(_) do
     quote do
-      alias DgraphEx.Query
-      alias Query.{Kwargs}
+      alias DgraphEx.{Query, Kwargs}
 
-      def query() do
+      def query do
         %Query{}
       end
 
       def query(kwargs) when is_list(kwargs) do
-        kwargs
-        |> Kwargs.query
+        Kwargs.query(kwargs)
       end
 
       def render(x) do
-        x
-        |> Query.render
+        Query.render(x)
       end
 
     end

@@ -1,8 +1,10 @@
 defmodule DgraphEx.KwargsTest do
   use ExUnit.Case
-  doctest DgraphEx.Query.Kwargs
+  doctest DgraphEx.Kwargs
+
   import DgraphEx
   import TestHelpers
+
 
   test "a query call returns a query" do
     assert query([]) == %DgraphEx.Query{}
@@ -174,5 +176,21 @@ defmodule DgraphEx.KwargsTest do
     """)
   end
 
-
+  test "mutation set works" do
+    assert mutation([
+      set: %Person{
+        name: "jason",
+        age: 33,
+      }
+    ])
+    |> render
+    |> clean_format == clean_format("""
+      {
+        @groupby(age) {
+          name
+          age
+        }
+      }
+    """)
+  end
 end

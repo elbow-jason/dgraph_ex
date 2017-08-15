@@ -65,8 +65,10 @@ defmodule DgraphEx.Field do
         Field.new(predicate, type, options)
       end
 
-      def field(subject, predicate, object) when subject == "*"
-                                            when predicate == "*" do
+      def field(subject, predicate, object) when subject == "*"   and is_atom(predicate)
+                                            when is_atom(subject) and predicate == "*"
+                                            when is_atom(subject) and is_atom(predicate)
+                                            when subject == "*"   and predicate == "*" do
         Field.delete_field(subject, predicate, object)
       end
       def field(%Uid{} = subject, predicate, object) when is_atom(predicate)
