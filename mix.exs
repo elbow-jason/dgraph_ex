@@ -5,7 +5,7 @@ defmodule DgraphEx.Mixfile do
     [
       app: :dgraph_ex,
       version: "0.1.0",
-      elixir: "~> 1.4.0",
+      elixir: "~> 1.5.0",
       build_embedded: Mix.env == :prod,
       start_permanent: Mix.env == :prod,
       deps: deps(),
@@ -13,10 +13,10 @@ defmodule DgraphEx.Mixfile do
       description: description(),
       test_coverage: [tool: ExCoveralls],
       preferred_cli_env: [
-        "coveralls": :test,
+        "coveralls":        :test,
         "coveralls.detail": :test,
-        "coveralls.post": :test,
-        "coveralls.html": :test,
+        "coveralls.post":   :test,
+        "coveralls.html":   :test,
       ],
       source_url: "https://github.com/elbow-jason/dgraph_ex",
     ]
@@ -44,10 +44,10 @@ defmodule DgraphEx.Mixfile do
   # Type "mix help deps" for more examples and options
   defp deps do
     [
-      {:httpoison, "~> 0.12.0"},
-      {:poison, "~> 3.1"},
-      {:excoveralls, "~> 0.7.2", only: :test},
-      {:ex_doc, ">= 0.0.0", only: :dev},
+      {:httpoison,    "~> 0.12.0"},
+      {:poison,       "~> 3.1"},
+      {:excoveralls,  "~> 0.7.2", only: :test},
+      {:ex_doc,       ">= 0.0.0", only: :dev},
     ]
   end
 

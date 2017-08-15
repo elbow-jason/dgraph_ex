@@ -1,6 +1,7 @@
 defmodule DgraphEx.Query.Select do
   alias DgraphEx.Query
   alias DgraphEx.Query.{Select, As}
+  alias DgraphEx.{Vertex, Util}
 
   defstruct [
     fields: []
@@ -8,7 +9,10 @@ defmodule DgraphEx.Query.Select do
 
   defmacro __using__(_) do
     quote do
-      def select(block) when is_tuple(block) or is_list(block) or is_atom(block) do
+      def select(block) when is_tuple(block)
+                        when is_list(block)
+                        when is_map(block)
+                        when is_atom(block) do
         DgraphEx.Query.Select.new(block)
       end
       def select(%Query{} = q, block) do
@@ -30,8 +34,17 @@ defmodule DgraphEx.Query.Select do
     |> Tuple.to_list
     |> new
   end
-  def new(field) when is_atom(field) do
-    new([{field, nil}])
+  def new(%{__struct__: _} = model) do
+    model
+    |> Vertex.as_selector
+    |> new
+  end
+  def new(atom) when is_atom(atom) do
+    if Util.has_struct?(atom) do
+      new(atom.__struct__)
+    else
+      new([{atom, nil}])
+    end
   end
   def new(fields) when is_list(fields) do
     %Select{}

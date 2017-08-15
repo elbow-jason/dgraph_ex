@@ -63,8 +63,12 @@ defmodule DgraphEx.Util do
   end
 
 
-  def has_function(module, func, arity) do
+  def has_function?(module, func, arity) do
     :erlang.function_exported(module, func, arity) 
+  end
+
+  def has_struct?(module) do
+    :erlang.function_exported(module, :__struct__, 0) 
   end
 
 end

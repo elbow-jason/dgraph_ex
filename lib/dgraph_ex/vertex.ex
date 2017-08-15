@@ -1,5 +1,5 @@
 defmodule DgraphEx.Vertex do
-  alias DgraphEx.{Vertex, Field}
+  alias DgraphEx.{Vertex, Field, Query}
 
   defmacro __using__(_opts) do
     quote do
@@ -58,6 +58,24 @@ defmodule DgraphEx.Vertex do
     |> Enum.map(fn field -> Field.as_variables(field) end)
   end
 
+  def as_selector(module) when is_atom(module) do
+    as_selector(module.__struct__)
+  end
+  def as_selector(model = %{__struct__: _}) do
+    model
+    |> Map.from_struct
+  
+    |> Map.drop([:__struct__])
+    |> Enum.filter(fn
+      {key, false} -> false
+      _ -> true
+    end)
+    |> Enum.map(fn
+      {key, %{__struct__: _} = submodel} -> { key, Query.Select.new(submodel) }
+      {key, _} -> {key, nil}
+    end)
+  end
+
   def populate_fields(subject, model = %{__struct__: module}) do
     populate_fields(subject, module, model)
   end
@@ -106,7 +124,7 @@ defmodule DgraphEx.Vertex do
     is_model?(module)
   end
   def is_model?(module) when is_atom(module) do
-    DgraphEx.Util.has_function(module, :__vertex__, 1)
+    DgraphEx.Util.has_function?(module, :__vertex__, 1)
   end
   def is_model?(_) do
     false

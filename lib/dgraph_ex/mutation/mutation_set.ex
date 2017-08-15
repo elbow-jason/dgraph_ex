@@ -22,7 +22,7 @@ defmodule DgraphEx.Mutation.MutationSet do
       end
 
       def set(%Mutation{} = mut, %{__struct__: module} = model) do
-        if DgraphEx.Util.has_function(module, :__vertex__, 1) do
+        if DgraphEx.Util.has_function?(module, :__vertex__, 1) do
           subject = module.__vertex__(:default_label)
           set(mut, subject, model)
         else
@@ -31,7 +31,7 @@ defmodule DgraphEx.Mutation.MutationSet do
       end
 
       def set(%Mutation{} = mut, subject, %{__struct__: module} = model) when is_atom(subject) do
-        if DgraphEx.Util.has_function(module, :__vertex__, 1) do
+        if DgraphEx.Util.has_function?(module, :__vertex__, 1) do
           Mutation.put_sequence(mut, %MutationSet{
             fields: Vertex.populate_fields(subject, module, model)
           })

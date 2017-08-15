@@ -73,4 +73,16 @@ defmodule DgraphEx.UtilTest do
     assert Util.as_literal("beef", :uid) == {:ok, "<beef>"}
   end
 
+  test "has_struct?/1 returns false for non-struct-modules" do
+    assert Util.has_struct?(Path) == false
+  end
+
+  test "has_struct?/1 returns false for non-struct-atoms" do
+    assert Util.has_struct?(:ok) == false
+  end
+
+  test "has_struct?/1 returns true for struct-having-modules" do
+    assert Util.has_struct?(URI) == true
+  end
+
 end
