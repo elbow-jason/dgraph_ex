@@ -12,6 +12,7 @@ defmodule DgraphEx do
 
   use Mutation
   use DgraphEx.Mutation.MutationSet
+  use DgraphEx.Mutation.MutationDelete
 
   use Query
   use Query.Var

@@ -58,4 +58,44 @@ defmodule DgraphEx.MutationTest do
     |> clean_format
   end
 
+  test "render mutation delete given (%Muation{}, uid, field_name, value)" do
+    assert mutation()
+    |> delete(uid("123"), :name, "Jason")
+    |> render
+    |> clean_format == clean_format("""
+      mutation {
+        delete {
+          <123> <name> "Jason" .
+        }
+      }
+    """)
+  end
+
+  test "render mutation delete can take wildcards" do
+    assert mutation()
+    |> delete("*", :name, "Jason")
+    |> render
+    |> clean_format == clean_format("""
+      mutation {
+        delete {
+          * <name> "Jason" .
+        }
+      }
+    """)
+  end
+
+  test "render mutation delete can delete all the edges" do
+    assert mutation()
+    |> delete("*", "*", "*")
+    |> render
+    |> clean_format == clean_format("""
+      mutation {
+        delete {
+          * * * .
+        }
+      }
+    """)
+  end
+
+
 end

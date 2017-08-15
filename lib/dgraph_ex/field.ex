@@ -1,5 +1,6 @@
 defmodule DgraphEx.Field do
-  alias DgraphEx.{Field, Vertex, }
+  alias DgraphEx.{Field, Vertex, Expr}
+  alias Expr.{Uid}
 
   defstruct [
     :subject,
@@ -200,11 +201,41 @@ defmodule DgraphEx.Field do
     |> Enum.join(" ")
   end
 
-  def as_delete(%Field{type: :uid} = _) do
+  def as_delete(%Field{subject: subject, predicate: pred, object: object}) do
     [
-      
+      render_delete_subject(subject),
+      render_delete_pred(pred),
+      render_delete_object(object),
+      "."
     ]
+    |> filter_empty
+    |> Enum.join(" ")
   end
+
+  defp render_delete_subject("*") do
+    "*"
+  end
+  defp render_delete_subject(%Uid{} = uid) do
+    uid |> Uid.as_literal |> Uid.render
+  end
+
+  defp render_delete_pred("*") do
+    "*"
+  end
+  defp render_delete_pred(pred) do
+    "<"<>to_string(pred)<>">"
+  end
+
+  defp render_delete_object("*") do
+    "*"
+  end
+  defp render_delete_object(""<>object) do
+    wrap_quotes(object)
+  end
+  defp render_delete_object(something) do
+    to_string(something)
+  end
+
 
   def dollarify(%Field{} = f) do
      dollarify(to_string(f.subject) <> "_" <> to_string(f.predicate))
