@@ -50,7 +50,7 @@ defmodule DgraphEx.SelectTest do
     |> func(:person, eq(:name, "Jason"))
     |> select(%Person{
       works_at: %Company{
-        owner: %Person{}
+        owner: %Person{},
       },
     })
     |> render
@@ -77,22 +77,45 @@ defmodule DgraphEx.SelectTest do
   end
 
   test "a model's field can be removed from a select by setting it to false" do
-    result =
-    query()
+    assert query()
     |> func(:person, eq(:name, "Jason"))
     |> select(%Person{
       works_at: false,
       age:      false,
     })
     |> render
-  assert result == clean_format("""
-    {
-      person(func: eq(name, \"Jason\")) {
-        _uid_
-        name
+    |> clean_format == clean_format("""
+      {
+        person(func: eq(name, \"Jason\")) {
+          _uid_
+          name
+        }
       }
-    }
-  """)
+    """)
+  end
+
+  test "a complex model query" do
+    assert query()
+    |> func(:person, eq(:name, "Jason"))
+    |> select(%Person{
+      age:      false,
+      works_at: %Company{
+        owner: false
+      },
+    })
+    |> render
+    |> clean_format == clean_format("""
+      {
+        person(func: eq(name, \"Jason\")) {
+          _uid_
+          name
+          works_at {
+            _uid_
+            name
+          }
+        }
+      }
+    """)
   end
 
 end
