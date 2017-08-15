@@ -109,6 +109,13 @@ defmodule DgraphEx.Field do
   def put_subject(%Field{} = field, subject) when is_atom(subject) do
     %{ field | subject: subject }
   end
+  def put_subject(fields, subject) when is_list(fields) do
+    fields
+    |> Enum.map(fn f -> put_subject(f, subject) end)
+  end
+  def put_subject(%Field{} = field, %Uid{} = subject) do
+    %{ field | subject: subject }
+  end
 
   def put_object(%Field{type: :int} = field, value) do
     case value do
@@ -145,6 +152,13 @@ defmodule DgraphEx.Field do
   def put_object(%Field{type: :uid} = field, %{__struct__: _} = model) do
     do_put_object(field, model)
   end
+  def put_object(%Field{type: :uid_literal} = field, %Uid{} = uid) do
+    do_put_object(field, uid |> Uid.as_literal)
+  end
+  def put_object(%Field{type: :uid_literal} = field, ""<>uid) do
+    do_put_object(field, uid |> Uid.new |> Uid.as_literal)
+  end
+
 
 
   defp do_put_object(field, value) do
@@ -176,7 +190,7 @@ defmodule DgraphEx.Field do
   def as_setter(%Field{object: object} = f) when not is_nil(object) do
     type_anno = type_annotation(f.type)
     [
-      "_:#{f.subject}", 
+      render_setter_subject(f), 
       "<#{f.predicate}>",
       (object |> stringify |> wrap_quotes)<>type_anno,
       render_facets(f),
@@ -184,6 +198,13 @@ defmodule DgraphEx.Field do
     ]
     |> filter_empty
     |> Enum.join(" ")
+  end
+
+  defp render_setter_subject(%Field{subject: subject}) when is_atom(subject) do
+    "_:#{subject}"
+  end
+  defp render_setter_subject(%Field{subject: %Uid{} = subject}) do
+    subject |> Uid.render
   end
 
 
@@ -274,8 +295,8 @@ defmodule DgraphEx.Field do
     end
   end
 
-  defp render_index(%Field{index: true}) do
-    "@index"
+  defp render_index(%Field{index: true, type: type}) do
+    "@index(#{type})"
   end
   defp render_index(%Field{index: indices}) when is_list(indices) do
     "@index("<> (indices |> Enum.map(&to_string/1) |> Enum.join(", ")) <>")"

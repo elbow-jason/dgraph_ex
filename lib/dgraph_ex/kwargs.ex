@@ -1,5 +1,5 @@
 defmodule DgraphEx.Kwargs do
-  alias DgraphEx.{Query, Mutation, Kwargs, Field}
+  alias DgraphEx.{Query, Mutation}
   alias Query.{Block}
 
   #as per @srh on dgraph slack (there may be more than these) v0.8.0

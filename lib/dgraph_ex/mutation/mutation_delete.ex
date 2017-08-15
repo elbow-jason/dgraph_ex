@@ -17,6 +17,9 @@ defmodule DgraphEx.Mutation.MutationDelete do
       end
     end
   end
+  def delete(%Mutation{} = mut, %Field{} = field) do
+    Mutation.put_sequence(mut, %MutationDelete{} |> put_field(field))
+  end
   def delete(%Mutation{} = mut, block) when is_tuple(block)  do
     fields =
       block
@@ -26,9 +29,6 @@ defmodule DgraphEx.Mutation.MutationDelete do
   def delete(%Mutation{} = mut, subject, predicate, object) do
     field =
       Field.delete_field(subject, predicate, object)
-    Mutation.put_sequence(mut, %MutationDelete{} |> put_field(field))
-  end
-  def delete(%Mutation{} = mut, %Field{} = field) do
     Mutation.put_sequence(mut, %MutationDelete{} |> put_field(field))
   end
 

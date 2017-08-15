@@ -131,4 +131,23 @@ defmodule DgraphEx.MutationTest do
     """)
   end
 
+  test "render mutation set uses the uid as the subject when provided" do
+    assert mutation()
+    |> set(%Person{
+      _uid_: "6789",
+      name: "Buffy",
+      age: 20,
+    })
+    |> render
+    |> clean_format == clean_format("""
+      mutation {
+        set {
+          <6789> <name> "Buffy"^^<xs:string> .
+          <6789> <age> "20"^^<xs:int> .
+        }
+      }
+    """)
+  end
+
+
 end
