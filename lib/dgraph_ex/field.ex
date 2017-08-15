@@ -60,25 +60,44 @@ defmodule DgraphEx.Field do
         Query.put_sequence(q, new_field)
       end
 
-      def field(predicate, type, options \\ []) when is_atom(predicate) and is_atom(type) and is_list(options) do
+      def field(predicate, type, options \\ [])
+      def field(predicate, type, options) when is_atom(predicate) and is_atom(type) and is_list(options) do
         Field.new(predicate, type, options)
       end
+
+      def field(subject, predicate, object) when subject == "*"
+                                            when predicate == "*" do
+        Field.delete_field(subject, predicate, object)
+      end
+      def field(%Uid{} = subject, predicate, object) when is_atom(predicate)
+                                                     when predicate == "*" do
+        Field.delete_field(subject, predicate, object)
+      end
+
 
     end
   end
 
   def new(predicate, type, options \\ []) when is_atom(predicate) and type in @allowed_types and is_list(options) do
-      %Field{
-        predicate:  predicate,
-        type:       type,
-        index:      options[:index],
-        facets:     options[:facets],
-        count:      !!options[:count],
-        default:    options[:default],
-        virtual:    !!options[:virtual],
-        reverse:    !!options[:reverse],
-        model:      options[:model],
-      }
+    %Field{
+      predicate:  predicate,
+      type:       type,
+      index:      options[:index],
+      facets:     options[:facets],
+      count:      !!options[:count],
+      default:    options[:default],
+      virtual:    !!options[:virtual],
+      reverse:    !!options[:reverse],
+      model:      options[:model],
+    }
+  end
+
+  def delete_field(subject, predicate, object) do
+    %Field{
+      subject:    subject,
+      predicate:  predicate,
+      object:     object,
+    }
   end
 
   def put_subject(fields, subject) when is_list(fields) do

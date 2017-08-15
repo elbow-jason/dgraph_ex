@@ -67,7 +67,7 @@ defmodule DgraphEx.Vertex do
   
     |> Map.drop([:__struct__])
     |> Enum.filter(fn
-      {key, false} -> false
+      {_, false} -> false
       _ -> true
     end)
     |> Enum.map(fn

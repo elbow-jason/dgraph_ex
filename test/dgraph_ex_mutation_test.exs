@@ -97,5 +97,22 @@ defmodule DgraphEx.MutationTest do
     """)
   end
 
+  test "render mutation delete can take a block" do
+    assert mutation()
+    |> delete({
+      field(uid("1234"), :name, "Jason"),
+      field(uid("3456"), :name, "Wimu"),
+    })
+    |> render
+    |> clean_format == clean_format("""
+      mutation {
+        delete {
+          <3456> <name> \"Wimu\" .
+          <1234> <name> \"Jason\" .
+        }
+      }
+    """)
+  end
+
 
 end
