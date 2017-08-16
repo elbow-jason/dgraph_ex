@@ -22,13 +22,13 @@ defmodule DgraphEx.Repo do
     if !Vertex.is_model?(model) do
       raise_vertex_models_only()
     end
-
+    prev_uids = Vertex.extract_uids(model)
     DgraphEx.mutation()
     |> DgraphEx.set(model)
     |> request
     |> case do
       {:ok, %{"code" => "Success", "message" => "Done", "uids" => uids}} ->
-        Vertex.join_model_and_uids(model, uids)
+        Vertex.join_model_and_uids(model, Map.merge(prev_uids, uids))
       resp ->
         resp
     end
@@ -57,13 +57,14 @@ defmodule DgraphEx.Repo do
     if !Vertex.is_model?(model) do
       raise_vertex_models_only()
     end
+    prev_uids = Vertex.extract_uids(model)
     DgraphEx.mutation()
     |> DgraphEx.set(model)
     |> DgraphEx.render
     |> request
     |> case do
       {:ok, %{"code" => "Success", "message" => "Done", "uids" => uids}} ->
-        Vertex.join_model_and_uids(model, uids)
+        Vertex.join_model_and_uids(model, Map.merge(prev_uids, uids))
       resp ->
         resp
     end

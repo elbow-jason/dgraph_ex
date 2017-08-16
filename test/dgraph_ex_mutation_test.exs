@@ -174,7 +174,7 @@ defmodule DgraphEx.MutationTest do
       mutation {
         set {
           <1234> <name> \"Flim\"^^<xs:string> .
-          <1234> <owner> \"<5678>\" .
+          <1234> <owner> <5678> .
           <5678> <name> \"Flinn\"^^<xs:string> .
         }
       }

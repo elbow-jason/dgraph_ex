@@ -107,8 +107,18 @@ defmodule DgraphEx.Vertex do
     |> Enum.filter(fn item -> item end)
   end
 
-  def join_model_and_uids(%{__struct__: _ } = model, uids, label \\ nil) do
-    uid = Map.get(uids, label_string(model, label))
+  def join_model_and_uids(%{__struct__: module } = model, uids) do
+    label =
+      module.__vertex__(:default_label)
+      |> to_string
+
+    join_model_and_uids(model, uids, label)
+  end
+  def join_model_and_uids(model, uids, label) when is_atom(label) do
+    join_model_and_uids(model, uids, to_string(label))
+  end
+  def join_model_and_uids(%{__struct__: module } = model, uids, label) when is_binary(label) do
+    uid = Map.get(uids, label)
     model
     |> Map.from_struct
     |> Enum.reduce(model, fn
@@ -120,12 +130,55 @@ defmodule DgraphEx.Vertex do
     |> Map.put(:_uid_, uid)
   end
 
-  defp label_string(_, label) when not is_nil(label) do
-    to_string(label)
+  def extract_uids(model) do
+    extract_uids(model, model.__struct__.__vertex__(:default_label))
   end
-  defp label_string(%{__struct__: module}, nil) do
-    module.__vertex__(:default_label) |> to_string
+  def extract_uids(model, subject) do
+    if not is_model?(model) do
+      raise """
+        Cannot extract the uids from non-Vertex models. Got #{inspect model}
+      """
+    end
+    model
+    |> do_extract_uids(subject)
+    |> Enum.map(fn {pred, uid} -> {to_string(pred), uid} end)
+    |> Enum.into(%{})
   end
+
+  def do_extract_uids(model, subject) do
+    model
+    |> Map.from_struct
+    |> Enum.reduce([], fn
+      ({:_uid_, %Uid{value: uid}}, acc) when is_binary(uid) ->
+        [ {subject, uid} | acc ]
+      ({:_uid_, uid}, acc) when is_binary(uid) ->
+        [ {subject, uid} | acc ]
+      ({key, %{__struct__: _} = other_model}, acc) ->
+        do_extract_uids(other_model, key) ++ acc
+      (_, acc) ->
+        acc
+    end)
+  end
+
+  # def do_extract_uids(model, subject) do
+  #   populate_fields(subject, model)
+  #   |> Enum.filter(fn
+  #     %{object: %Uid{}} ->
+  #       true
+  #     %{type: :uid, object: uid} when is_binary(uid) ->
+  #       true
+  #     _ ->
+  #       false
+  #   end)
+  #   |> Enum.reduce([], fn
+  #     (%{predicate: pred, object: %Uid{value: uid}}, acc) ->
+  #       [ {pred, uid} | acc ]
+  #     (%{predicate: pred, object: %{__struct__: _} = other_model, type: :uid}, acc) ->
+  #       do_extract_uids(pred, other_model) ++ acc
+  #     (%{predicate: pred, object: uid}, acc) when is_binary(uid) ->
+  #       [ {pred, uid} | acc ]
+  #   end)
+  # end
 
   def get_field(module, predicate) do
     module.__vertex__(:fields)

@@ -162,8 +162,6 @@ defmodule DgraphEx.Field do
     do_put_object(field, uid |> Uid.new |> Uid.as_literal)
   end
 
-
-
   defp do_put_object(field, value) do
     %{ field | object: value }
   end
@@ -214,28 +212,37 @@ defmodule DgraphEx.Field do
     "<" <> to_string(predicate) <> ">"
   end
 
-  defp render_setter_object(%Field{type: :uid, object: uid}) when is_atom(uid) and not is_nil(uid) do
-    "_:#{uid}"
+  @is_uid [
+    :uid,
+    :uid_literal,
+  ]
+  defp render_setter_object(%Field{type: type, object: object}) when type in @is_uid do
+    case object do
+      nil ->
+        nil
+      uid when is_atom(uid) ->
+        "_:#{uid}"
+      ""<>uid ->
+        uid
+        |> Uid.new
+        |> Uid.render
+      %Uid{} = uid ->
+        uid
+        |> Uid.render
+    end
   end
-  defp render_setter_object(%Field{type: :uid_literal, object: %Uid{} = uid}) do
-    uid |> Uid.render
-  end
+  # defp render_setter_object(%Field{type: type, object: %Uid{} = uid}) when type in @is_uid do
+  #   uid
+  #   |> Uid.render
+  # end
+  # defp render_setter_object(%Field{type: type, object: ""<>uid}) when type in @is_uid do
+  #   uid
+  #   |> Uid.new
+  #   |> Uid.render
+  # end
   defp render_setter_object(%Field{object: object, type: type}) do
     (object |> stringify |> wrap_quotes) <> type_annotation(type)
   end
-  # defp render_setter_object(%Field{type: type, object: uid}) when is_binary(uid) when type in [:uid_literal, :uid] do
-  #   uid
-  #   |> Uid.new
-  #   |> Uid.as_literal
-  #   |> Uid.render
-  # end
-  # defp render_setter_object(%Field{type: type, object: %Uid{value: val} = uid}) when is_binary(val) when type in [:uid_literal, :uid] do
-  #   uid
-  #   |> Uid.as_literal
-  #   |> Uid.render
-  # end
-
-
 
   def as_setter_template(%Field{object: nil}) do
     ""
