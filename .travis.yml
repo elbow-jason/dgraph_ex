@@ -11,6 +11,6 @@ env:
 
 before_install:
   - sudo curl https://get.dgraph.io -sSf | bash
-  - nohup dgraph &
+  - nohup dgraph --memory_mb=1025 &
 
 script: mix coveralls.travis
