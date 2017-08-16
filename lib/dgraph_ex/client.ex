@@ -46,17 +46,8 @@ defmodule DgraphEx.Client do
   defp handle_response(%{"errors" => _} = err) do
     {:error, err}
   end
-  defp handle_response(%{"data" => _} = data) do
-    data
-  end
-  defp handle_response(%{"code" => "Success"} = json) do
-    {:ok, json}
-  end
-  defp handle_response(%{"code" => _, "message" => _} = err) do
-    {:error, err}
-  end
-  defp handle_response(ok) do
-    {:ok, ok}
+  defp handle_response(%{"data" => data}) do
+    {:ok, data}
   end
 
 end
