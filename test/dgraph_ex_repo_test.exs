@@ -61,27 +61,27 @@ defmodule DgraphEx.RepoTest do
     assert company2.owner.name == "Flynn"
   end
 
-  # test "other Vertex models on a model are updated and return with uids" do
-  #   company1 = Repo.insert(%Company{
-  #     name: "Flim",
-  #   })
-  #   person1 = Repo.insert(%Person{
-  #     name: "Flinn"
-  #   })
+  test "other Vertex models on a model are updated and return with uids" do
+    company1 = Repo.insert(%Company{
+      name: "Flim",
+    })
+    person1 = Repo.insert(%Person{
+      name: "Flinn"
+    })
 
-  #   company2 = Repo.update(%{ company1 | owner: person1 |> Map.put(:name, "Flynn")})
-  #   person2 = company2.owner
-  #   assert company1._uid_ == company2._uid_
-  #   assert company1.name == "Flim"
-  #   assert company2.name == "Flim"
-  #   assert company1.owner == nil
-  #   assert company2.owner != nil
-  #   assert company2.owner.__struct__ == Person
-  #   assert company2.owner._uid_ != nil
-  #   assert company2.owner._uid_ |> is_binary
-  #   assert company2.owner.name == "Flynn"
-  #   assert person1._uid_ == person2._uid_
-  # end
+    company2 = Repo.update(%{ company1 | owner: person1 |> Map.put(:name, "Flynn")})
+    person2 = company2.owner
+    assert company1._uid_ == company2._uid_
+    assert company1.name == "Flim"
+    assert company2.name == "Flim"
+    assert company1.owner == nil
+    assert company2.owner != nil
+    assert company2.owner.__struct__ == Person
+    assert company2.owner._uid_ != nil
+    assert company2.owner._uid_ |> is_binary
+    assert company2.owner.name == "Flynn"
+    assert person1._uid_ == person2._uid_
+  end
 
   # test "other Vertex models on a model are configured correctly" do
   #   company1 = Repo.insert(%Company{
