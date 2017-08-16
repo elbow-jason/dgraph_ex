@@ -176,10 +176,10 @@ defmodule DgraphEx.Field do
       |> Enum.map(&as_setter/1)
     [ as_setter(%{f | object: child_subject }) | child_fields ]
   end
-  def as_setter(%Field{type: :uid, subject: subj, predicate: pred, object: obj} = f) when is_atom(obj) do
+  def as_setter(%Field{type: :uid, object: obj} = f) when is_atom(obj) do
     [
-      "_:#{subj}", 
-      "<#{pred}>",
+      render_setter_subject(f), 
+      render_setter_predicate(f),
       "_:#{obj}",
       render_facets(f),
       ".",
@@ -191,7 +191,7 @@ defmodule DgraphEx.Field do
     type_anno = type_annotation(f.type)
     [
       render_setter_subject(f), 
-      "<#{f.predicate}>",
+      render_setter_predicate(f),
       (object |> stringify |> wrap_quotes)<>type_anno,
       render_facets(f),
       "."
@@ -205,6 +205,10 @@ defmodule DgraphEx.Field do
   end
   defp render_setter_subject(%Field{subject: %Uid{} = subject}) do
     subject |> Uid.render
+  end
+
+  defp render_setter_predicate(%Field{predicate: predicate}) do
+    "<" <> to_string(predicate) <> ">"
   end
 
 

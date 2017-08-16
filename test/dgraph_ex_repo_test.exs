@@ -4,9 +4,6 @@ defmodule DgraphEx.RepoTest do
 
   alias DgraphEx.Repo
 
-  # import DgraphEx
-  # import TestHelpers
-
   alias DgraphEx.ModelPerson, as: Person
   alias DgraphEx.ModelCompany, as: Company
 
@@ -26,8 +23,43 @@ defmodule DgraphEx.RepoTest do
     company = Repo.insert(%Company{
       name: "Flim",
     })
-
+  
     assert is_binary(company._uid_)
+  end
+
+  test "models can be inserted and then updated" do
+    company1 = Repo.insert(%Company{
+      name: "Flim",
+    })
+
+    company2 =
+      company1
+      |> Map.put(:name, "Flam")
+      |> Repo.update
+
+    assert is_binary(company1._uid_)
+    assert company1.name == "Flim"
+    assert company2.name == "Flam"
+    assert company1._uid_ == company2._uid_
+  end
+
+
+  test "other Vertex models on a model are inserted and return with uids if they are new" do
+    company1 = Repo.insert(%Company{
+      name: "Flim",
+    })
+    company2 = Repo.update(%{ company1 | owner: %Person{
+      name: "Flynn"
+    }})
+    assert company1._uid_ == company2._uid_
+    assert company1.name == "Flim"
+    assert company2.name == "Flim"
+    assert company1.owner == nil
+    assert company2.owner != nil
+    assert company2.owner.__struct__ == Person
+    assert company2.owner._uid_ != nil
+    assert company2.owner._uid_ |> is_binary
+    assert company2.owner.name == "Flynn"
   end
 
 end
