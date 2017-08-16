@@ -33,8 +33,7 @@ defmodule DgraphEx.MutationTest do
   end
 
   test "render mutation set can handle a nested model" do
-    expected = "mutation { set { _:company <name> \"TurfBytes\"^^<xs:string> .\n_:company <owner> _:owner .\n_:owner <name> \"Jason\"^^<xs:string> . } }"
-    assert expected == mutation()
+    assert mutation()
     |> set(%Company{
       name: "TurfBytes",
       owner: %Person{
@@ -42,6 +41,15 @@ defmodule DgraphEx.MutationTest do
       }
     })
     |> render
+    |> clean_format == clean_format("""
+      mutation {
+        set {
+          _:company <name>  "TurfBytes"^^<xs:string> .
+          _:company <owner> _:owner .
+          _:owner   <name>  "Jason"^^<xs:string> .
+        }
+      }
+    """)
   end
 
   test "render mutation schema given a model" do
@@ -148,6 +156,31 @@ defmodule DgraphEx.MutationTest do
       }
     """)
   end
+
+  test "render mutation set can handle nested models with uids" do
+    model = %Company{
+      _uid_: "1234",
+      name: "Flim",
+      owner: %Person{
+        _uid_: "5678",
+        name: "Flinn"
+      }
+    }
+
+    assert mutation()
+    |> set(model)
+    |> render
+    |> clean_format == clean_format("""
+      mutation {
+        set {
+          <1234> <name> \"Flim\"^^<xs:string> .
+          <1234> <owner> \"<5678>\" .
+          <5678> <name> \"Flinn\"^^<xs:string> .
+        }
+      }
+    """)
+  end
+
 
 
 end

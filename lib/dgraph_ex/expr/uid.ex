@@ -94,3 +94,11 @@ defmodule DgraphEx.Expr.Uid do
   end
 
 end
+
+defimpl String.Chars, for: DgraphEx.Expr.Uid do
+  
+  def to_string(uid) do
+    DgraphEx.Expr.Uid.render(uid)
+  end
+
+end

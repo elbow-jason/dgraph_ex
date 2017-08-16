@@ -1,7 +1,6 @@
 defmodule DgraphEx.Mutation.MutationSet do
   alias DgraphEx.Mutation.MutationSet
   alias DgraphEx.Field
-  alias DgraphEx.Expr.{Uid}
 
   defstruct [
     fields: []
@@ -24,15 +23,16 @@ defmodule DgraphEx.Mutation.MutationSet do
 
       def set(%Mutation{} = mut, %{__struct__: module} = model) do
         if DgraphEx.Util.has_function?(module, :__vertex__, 1) do
-          case model do
-            %{_uid_: uid} when is_binary(uid) -> 
-              set(mut, uid |> Uid.new |> Uid.as_literal, model)
-            %{_uid_: %Uid{} = uid} -> 
-              set(mut, uid |> Uid.as_literal, model)
-            _ ->
-              subject = module.__vertex__(:default_label)
-              set(mut, subject, model)
-          end
+          # case model do
+          #   %{_uid_: uid} when is_binary(uid) -> 
+          #     set(mut, uid |> Uid.new |> Uid.as_literal, model)
+          #   %{_uid_: %Uid{} = uid} -> 
+          #     set(mut, uid |> Uid.as_literal, model)
+          #   _ ->
+          subject = Vertex.setter_subject(model)
+          # IO.puts("model #{inspect model}\nsubject #{subject}")
+          set(mut, subject, model)
+          # end
         else
           raise_vertex_only_error()
         end

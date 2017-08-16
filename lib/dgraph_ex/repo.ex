@@ -10,8 +10,13 @@ defmodule DgraphEx.Repo do
   def request(%{__struct__: module} = model) when module in @allowed_modules do
     model
     |> DgraphEx.render
-    |> DgraphEx.Client.send
+    |> request
   end
+
+  def request(binary) when is_binary(binary) do
+    DgraphEx.Client.send(binary)
+  end
+
 
   def insert(%{__struct__: _, _uid_: nil} = model) do
     if !Vertex.is_model?(model) do
@@ -54,6 +59,22 @@ defmodule DgraphEx.Repo do
     end
     DgraphEx.mutation()
     |> DgraphEx.set(model)
+    |> DgraphEx.render
+    |> request
+    |> case do
+      {:ok, %{"code" => "Success", "message" => "Done", "uids" => uids}} ->
+        Vertex.join_model_and_uids(model, uids)
+      resp ->
+        resp
+    end
+  end
+
+  def delete(%{__struct__: _, _uid_: uid} = model) when is_binary(uid) do
+    if !Vertex.is_model?(model) do
+      raise_vertex_models_only()
+    end
+    DgraphEx.mutation()
+    |> DgraphEx.delete(DgraphEx.uid(uid), "*", "*")
     |> request
     |> case do
       {:ok, %{"code" => "Success", "message" => "Done", "uids" => uids}} ->

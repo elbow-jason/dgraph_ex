@@ -149,8 +149,11 @@ defmodule DgraphEx.Field do
         do_put_object(field, datetime)
     end
   end
-  def put_object(%Field{type: :uid} = field, %{__struct__: _} = model) do
-    do_put_object(field, model)
+  def put_object(%Field{type: :uid} = field, %Uid{} = uid) do
+    do_put_object(field, uid)
+  end
+  def put_object(%Field{type: :uid} = field, uid) when is_atom(uid) do
+    do_put_object(field, uid)
   end
   def put_object(%Field{type: :uid_literal} = field, %Uid{} = uid) do
     do_put_object(field, uid |> Uid.as_literal)
@@ -169,30 +172,29 @@ defmodule DgraphEx.Field do
   def as_setter(%Field{object: nil}) do
     ""
   end
-  def as_setter(%Field{type: :uid, predicate: child_subject, object: %{__struct__: _} = model} = f) do
+  def as_setter(%Field{type: :uid, predicate: predicate, object: %Uid{}} = f) do
+    render_setter(f)
+  end
+  def as_setter(%Field{type: :uid, predicate: predicate, object: %{__struct__: _} = model} = f) do
+    child_subject = Vertex.setter_subject(model, predicate)
     child_fields =
       child_subject
       |> Vertex.populate_fields(model)
+      |> Enum.filter(fn
+        %{predicate: :_uid_} -> false
+        _ -> true
+      end)
       |> Enum.map(&as_setter/1)
     [ as_setter(%{f | object: child_subject }) | child_fields ]
   end
-  def as_setter(%Field{type: :uid, object: obj} = f) when is_atom(obj) do
-    [
-      render_setter_subject(f), 
-      render_setter_predicate(f),
-      "_:#{obj}",
-      render_facets(f),
-      ".",
-    ]
-    |> filter_empty
-    |> Enum.join(" ")
-  end
   def as_setter(%Field{object: object} = f) when not is_nil(object) do
-    type_anno = type_annotation(f.type)
+    render_setter(f)
+  end
+  defp render_setter(f) do
     [
       render_setter_subject(f), 
       render_setter_predicate(f),
-      (object |> stringify |> wrap_quotes)<>type_anno,
+      render_setter_object(f),
       render_facets(f),
       "."
     ]
@@ -204,12 +206,35 @@ defmodule DgraphEx.Field do
     "_:#{subject}"
   end
   defp render_setter_subject(%Field{subject: %Uid{} = subject}) do
-    subject |> Uid.render
+    subject
+    |> Uid.render
   end
 
   defp render_setter_predicate(%Field{predicate: predicate}) do
     "<" <> to_string(predicate) <> ">"
   end
+
+  defp render_setter_object(%Field{type: :uid, object: uid}) when is_atom(uid) and not is_nil(uid) do
+    "_:#{uid}"
+  end
+  defp render_setter_object(%Field{type: :uid_literal, object: %Uid{} = uid}) do
+    uid |> Uid.render
+  end
+  defp render_setter_object(%Field{object: object, type: type}) do
+    (object |> stringify |> wrap_quotes) <> type_annotation(type)
+  end
+  # defp render_setter_object(%Field{type: type, object: uid}) when is_binary(uid) when type in [:uid_literal, :uid] do
+  #   uid
+  #   |> Uid.new
+  #   |> Uid.as_literal
+  #   |> Uid.render
+  # end
+  # defp render_setter_object(%Field{type: type, object: %Uid{value: val} = uid}) when is_binary(val) when type in [:uid_literal, :uid] do
+  #   uid
+  #   |> Uid.as_literal
+  #   |> Uid.render
+  # end
+
 
 
   def as_setter_template(%Field{object: nil}) do

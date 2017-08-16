@@ -1,5 +1,6 @@
 defmodule DgraphEx.Vertex do
   alias DgraphEx.{Vertex, Field, Query}
+  alias DgraphEx.Expr.Uid
 
   defmacro __using__(_opts) do
     quote do
@@ -49,6 +50,10 @@ defmodule DgraphEx.Vertex do
   def as_setter(subject, model = %{__struct__: _}) do
     subject
     |> populate_fields(model)
+    |> Enum.filter(fn
+      %{predicate: :_uid_} -> false
+      _ -> true
+    end)
     |> Enum.map(&Field.as_setter/1)
   end
 
@@ -64,7 +69,6 @@ defmodule DgraphEx.Vertex do
   def as_selector(model = %{__struct__: _}) do
     model
     |> Map.from_struct
-  
     |> Map.drop([:__struct__])
     |> Enum.filter(fn
       {_, false} -> false
@@ -83,12 +87,20 @@ defmodule DgraphEx.Vertex do
     module.__vertex__(:fields)
     |> Enum.map(fn field ->
       object = Map.get(model, field.predicate, nil)
-      if not is_nil(object) do
-        field
-        |> Field.put_subject(subject)
-        |> Field.put_object(object)
-      else
-        nil
+      cond do
+        Vertex.is_model?(object) ->
+          sub_subject = Vertex.setter_subject(object, field.predicate)
+          relationship =
+            field
+            |> Field.put_subject(subject)
+            |> Field.put_object(sub_subject)
+          [ relationship | populate_fields(sub_subject, object) ]
+        !is_nil(object) -> 
+          field
+          |> Field.put_subject(subject)
+          |> Field.put_object(object)
+        true ->
+          nil
       end
     end)
     |> List.flatten
@@ -128,6 +140,36 @@ defmodule DgraphEx.Vertex do
   end
   def is_model?(_) do
     false
+  end
+
+  def setter_subject(model, default \\ nil)
+  def setter_subject(%Uid{} = uid, _) do
+    uid.value
+  end
+  def setter_subject(%{__struct__: module} = model, default) do
+    if !DgraphEx.Util.has_function?(module, :__vertex__, 1) do
+      raise("""
+        Vertex.setter_subject only responds to Vertex models.
+        Got #{inspect model}
+      """)
+    end
+    do_setter_subject(model, default)
+  end
+
+  def do_setter_subject(%{_uid_: uid}, _) when is_binary(uid) do
+    uid
+    |> Uid.new
+    |> Uid.as_literal
+  end
+  def do_setter_subject(%{_uid_: %Uid{} = uid}, _) do
+    uid
+    |> Uid.as_literal
+  end
+  def do_setter_subject(%{__struct__: module}, nil) do
+    module.__vertex__(:default_label)
+  end
+  def do_setter_subject(_, default) when not is_nil(default) do
+    default
   end
 
 end
