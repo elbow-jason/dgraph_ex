@@ -10,6 +10,17 @@ An elixir database wrapper for dgraph database.
 
 Works with dgraph v0.8.1 (most current release as of 16 AUG 2017)
 
+[Docs](https://hexdocs.pm/dgraph_ex)
+
+##### Installation: 
+
+```elixir
+def deps do
+  [{:dgraph_ex, "~> 0.1.0"}]
+end
+```
+
+
 ## Usage 
 
 #### define a model
@@ -117,31 +128,20 @@ The resulting `person` is:
 
 #### update a model
 
-Using the person from above:
+Using the `person` from above:
 
 ```elixir
 {:ok, person} = Person.changeset(person, %{name: "John Lakeman"})
-{:ok, person} = Repo.update(person)
+person = Repo.update(person)
 ```
 
+#### get a model by `_uid_`.
 
-
-#### find a model
+Coming soon.
 
 #### find anything
 
-## Installation
+Coming soon.
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `dgraph_ex` to your list of dependencies in `mix.exs`:
 
-```elixir
-def deps do
-  [{:dgraph_ex, "~> 0.1.0"}]
-end
-```
-
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/dgraph_ex](https://hexdocs.pm/dgraph_ex).
 
