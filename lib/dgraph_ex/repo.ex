@@ -17,7 +17,6 @@ defmodule DgraphEx.Repo do
     DgraphEx.Client.send(binary)
   end
 
-
   def insert(%{__struct__: _, _uid_: nil} = model) do
     if !Vertex.is_model?(model) do
       raise_vertex_models_only()

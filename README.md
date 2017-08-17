@@ -69,7 +69,6 @@ alias DgraphEx.Repo
 {:ok, _} = Repo.request mutation(schema: Land)
 {:ok, _} = Repo.request mutation(schema: Person)
 
-
 ```
 
 #### define a changeset
@@ -141,7 +140,52 @@ Coming soon.
 
 #### find anything
 
-Coming soon.
+With function syntax:
 
+```elixir
 
+import DgraphEx
 
+query()
+|> func(:spy, eq(:name, "John Lakeman"))
+|> select({
+  :_uid_,
+  :address,
+  :name,
+})
+|> Repo.request
+
+```
+
+Again with keyword (kwargs) syntax:
+
+```
+import DgraphEx
+alias DgraphEx.Repo
+
+query([
+  get: :spy,
+  func: eq(:name, "John Lakeman"),
+  select: {
+    :_uid_,
+    :address,
+    :name,
+  },
+]) |> Repo.request
+
+```
+
+Both of the above requests for "spy" result in the same response:
+
+```elixir
+{:ok, %{
+  "spy" => [
+    %{
+      "_uid_" => "0x11c",
+      "address" => "221B Baker St. London, England 55555",
+      "name" => "John Lakeman",
+    }
+  ]
+}}
+
+```
