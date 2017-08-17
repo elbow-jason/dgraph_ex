@@ -24,7 +24,7 @@ defmodule DgraphEx.Changeset do
   def cast(%{__struct__: module} = model, %{} = changes, allowed_fields) when is_list(allowed_fields) do
     %Cs{
       module: module,
-      model: model |> Map.from_struct,
+      model: model |> Map.from_struct |> Map.put(:_uid_, model._uid_),
       changes: Map.take(changes, allowed_fields),
       errors: [],
     }
