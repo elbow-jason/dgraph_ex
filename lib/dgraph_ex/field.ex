@@ -170,7 +170,7 @@ defmodule DgraphEx.Field do
   def as_setter(%Field{object: nil}) do
     ""
   end
-  def as_setter(%Field{type: :uid, predicate: predicate, object: %Uid{}} = f) do
+  def as_setter(%Field{type: :uid, object: %Uid{}} = f) do
     render_setter(f)
   end
   def as_setter(%Field{type: :uid, predicate: predicate, object: %{__struct__: _} = model} = f) do

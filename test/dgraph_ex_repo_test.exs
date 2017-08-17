@@ -153,4 +153,9 @@ defmodule DgraphEx.RepoTest do
     assert {person_uid,   :_uid_,  person_uid}      in triples
   end
 
+  test "schema responds is correctly handled" do
+    resp = Repo.request DgraphEx.mutation(schema: Person)
+    assert resp == {:ok, %{"code" => "Success", "message" => "Done", "uids" => %{}}}
+  end
+
 end

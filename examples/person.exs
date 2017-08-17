@@ -2,10 +2,19 @@ defmodule DgraphEx.Examples.Person do
   use DgraphEx.Vertex
 
   alias DgraphEx.Examples.Person
+  alias DgraphEx.Changeset
 
   vertex :person do
     field :name,    :string, index: [:exact, :term]
     field :address, :string, index: [:exact, :term]
+  end
+
+  def changeset(%Person{} = model, changes) when is_map(changes) do
+    model
+    |> Changeset.cast(changes, _allowed_fields = [:name, :address])
+    |> Changeset.validate_required(_required_fields = [:name, :address])
+    |> Changeset.validate_type(_typed_fields = [:name, :address])
+    |> Changeset.uncast
   end
 
   def jason_g do

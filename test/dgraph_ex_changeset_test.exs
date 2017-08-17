@@ -118,4 +118,19 @@ defmodule DgraphEx.ChangesetTest do
       |> Changeset.validate_type([:name, age: [:int, :float]])
     assert cs.errors == [age: :invalid_type, name: :invalid_string]
   end
+
+  test "uncasting with errors returns an error tuple" do
+    result =
+      %Person{}
+      |> Changeset.cast(%{name: :nope, age: :nope}, [:name, :age])
+      |> Changeset.validate_type([:name, age: [:int, :float]])
+      |> Changeset.uncast()
+    
+    assert result ==  {:error, %DgraphEx.Changeset{
+      changes: %{age: :nope, name: :nope},
+      errors: [age: :invalid_type, name: :invalid_string],
+      model: %{_uid_: nil, age: nil, name: nil, works_at: nil},
+      module: DgraphEx.ModelPerson
+    }}
+  end
 end

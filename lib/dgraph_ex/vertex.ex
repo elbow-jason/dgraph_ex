@@ -117,7 +117,7 @@ defmodule DgraphEx.Vertex do
   def join_model_and_uids(model, uids, label) when is_atom(label) do
     join_model_and_uids(model, uids, to_string(label))
   end
-  def join_model_and_uids(%{__struct__: module } = model, uids, label) when is_binary(label) do
+  def join_model_and_uids(%{__struct__: _} = model, uids, label) when is_binary(label) do
     uid = Map.get(uids, label)
     model
     |> Map.from_struct

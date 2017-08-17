@@ -1,9 +1,8 @@
 defmodule DgraphEx.Example.Land do
-  use Vertex
+  use DgraphEx.Vertex
   alias DgraphEx.Example.{Land, Person}
 
   vertex :land do
-    field :parcel_number,       :string,  index: [:exact],         count: true
     field :address,             :string,  index: [:exact, :term],  count: true
     field :zipcode,             :string,  index: [:exact],         count: true
     field :city,                :string,  index: [:exact],         count: true
@@ -12,11 +11,9 @@ defmodule DgraphEx.Example.Land do
     field :zoning,              :string,  index: [:exact],         count: true
     field :floors,              :int
     field :construction_year,   :string
-    field :assessor_sale_price, :int
     field :geo_center,          :geo,     index: [:geo]
     field :geo_border,          :geo,     index: [:geo]
     field :owner,               :uid,     model: Person, reverse: true
-    field :seller,              :uid,     model: Person, reverse: true
   end
 
   @allowed ~w(
