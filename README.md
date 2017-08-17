@@ -159,7 +159,7 @@ query()
 
 Again with keyword (kwargs) syntax:
 
-```
+```elixir
 import DgraphEx
 alias DgraphEx.Repo
 
