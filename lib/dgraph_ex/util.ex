@@ -72,4 +72,13 @@ defmodule DgraphEx.Util do
     has_function?(module, :__struct__, 0)
   end
 
+  def get_value(params, key, default \\ nil) when is_atom(key) do
+    str_key = to_string(key)
+    cond do
+      Map.has_key?(params, key)     -> Map.get(params, key)
+      Map.has_key?(params, str_key) -> Map.get(params, str_key)
+      true -> default
+    end
+  end
+
 end

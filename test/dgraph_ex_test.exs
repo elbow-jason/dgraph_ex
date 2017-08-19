@@ -9,6 +9,8 @@ defmodule DgraphExTest do
     Groupby,
   }
 
+  alias DgraphEx.ModelPerson, as: Person
+
   test "groupby/1 function" do
     assert DgraphEx.groupby(:age) == %Groupby{predicate: :age}
   end
@@ -206,6 +208,53 @@ defmodule DgraphExTest do
     }
     assert render(b) == example_from_the_website
   end
+
+  test "DgraphEx.into/3 works for populating models from maps" do
+    payload = %{
+      "spy" => [
+        %{
+          "name" => "John Lakeman",
+          "_uid_" => "123",
+        }
+      ]
+    }
+    assert DgraphEx.into(payload, Person, :spy) == %{
+      spy: [
+        %DgraphEx.ModelPerson{
+          _uid_: "123",
+          age: nil,
+          name: "John Lakeman",
+          works_at: nil,
+        }
+      ]
+    }
+  end
+
+  test "DgraphEx.into/3 works for ok tuples" do
+    payload = %{
+      "spy" => [
+        %{
+          "name" => "John Lakeman",
+          "_uid_" => "123",
+        }
+      ]
+    }
+    assert DgraphEx.into({:ok, payload}, Person, :spy) == %{
+      spy: [
+        %DgraphEx.ModelPerson{
+          _uid_: "123",
+          age: nil,
+          name: "John Lakeman",
+          works_at: nil,
+        }
+      ]
+    }
+  end
+
+  test "DgraphEx.into/3 works for error tuples" do
+    assert DgraphEx.into({:error, :the_bleep_went_blop}, Person, :spy) == {:error, :the_bleep_went_blop}
+  end
+
 
 
 end

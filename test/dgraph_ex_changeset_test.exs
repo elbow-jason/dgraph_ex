@@ -133,4 +133,7 @@ defmodule DgraphEx.ChangesetTest do
       module: DgraphEx.ModelPerson
     }}
   end
+
+  test "validate_child can validate a child/submodel correctly" do
+  end
 end

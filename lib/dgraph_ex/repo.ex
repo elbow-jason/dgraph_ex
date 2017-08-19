@@ -25,8 +25,10 @@ defmodule DgraphEx.Repo do
     |> case do
       {:ok, %{"get_by_uid" => []}} ->
         nil
-      {:ok, %{"get_by_uid" => [found_by_uid]}} ->
-        Vertex.populate_model(module.__struct__, found_by_uid)
+      {:ok, %{"get_by_uid" => [%{"_uid_" => _} = found]}} when map_size(found) == 1 ->
+        nil
+      {:ok, %{"get_by_uid" => [found]}} ->
+        Vertex.populate_model(module.__struct__, found)
       err ->
         err
     end

@@ -167,4 +167,10 @@ defmodule DgraphEx.RepoTest do
     assert company2._uid_ == company._uid_
   end
 
+  test "Repo.get returns nil if the uid is not found" do
+    company = Repo.get(Company, "0x555555")
+    assert company == nil
+  end
+
+
 end

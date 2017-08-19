@@ -1,5 +1,5 @@
 defmodule DgraphEx.Vertex do
-  alias DgraphEx.{Vertex, Field, Query}
+  alias DgraphEx.{Vertex, Field, Query, Util}
   alias DgraphEx.Expr.Uid
 
   defmacro __using__(_opts) do
@@ -231,15 +231,26 @@ defmodule DgraphEx.Vertex do
 
   defp do_populate_model(module, model_data, params) do
     model_data
-    |> Enum.reduce(model_data, fn ({key, model_value}, model_acc) ->
-      str_key = to_string(key)
-      value =
-        cond do
-          Map.has_key?(params, key)     -> Map.get(params, key)
-          Map.has_key?(params, str_key) -> Map.get(params, str_key)
-          true -> model_value
+    |> Enum.reduce(model_data, fn
+      ({key, %{__struct__: _} = sub_model}, model_acc) ->
+        case Util.get_value(params, key, nil) do
+          params_list when is_list(params_list) ->
+            # params had a list
+            # so we should populate each item of the list with a submodel.
+            models = Enum.map(params_list, fn
+              sub_params -> populate_model(sub_model, sub_params)
+            end)
+            Map.put(model_acc, key, models)
+          %{} = sub_params ->
+            # params had a submap so we populate it
+            Map.put(model_acc, key, populate_model(sub_model, sub_params))
+          nil ->
+            # the params had no submap for this key
+            Map.put(model_acc, key, nil)
         end
-      Map.put(model_acc, key, value)
+      ({key, model_value}, model_acc) ->
+        value = Util.get_value(params, key, model_value)
+        Map.put(model_acc, key, value)
     end)
     |> Map.put(:__struct__, module)
   end
