@@ -225,4 +225,22 @@ defmodule DgraphEx.Vertex do
     default
   end
 
+  def populate_model(%{__struct__: module} = model, %{} = params) do
+    do_populate_model(module, model |> Map.from_struct, params)
+  end
+
+  defp do_populate_model(module, model_data, params) do
+    model_data
+    |> Enum.reduce(model_data, fn ({key, model_value}, model_acc) ->
+      str_key = to_string(key)
+      value =
+        cond do
+          Map.has_key?(params, key)     -> Map.get(params, key)
+          Map.has_key?(params, str_key) -> Map.get(params, str_key)
+          true -> model_value
+        end
+      Map.put(model_acc, key, value)
+    end)
+    |> Map.put(:__struct__, module)
+  end
 end

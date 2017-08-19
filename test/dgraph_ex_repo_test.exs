@@ -158,4 +158,13 @@ defmodule DgraphEx.RepoTest do
     assert resp == {:ok, %{"code" => "Success", "message" => "Done", "uids" => %{}}}
   end
 
+  test "Repo.get can get by model and _uid_" do
+    company = Repo.insert(%Company{
+      name: "Flim",
+    })
+    company2 = Repo.get(Company, company._uid_)
+    assert company2.name == "Flim"
+    assert company2._uid_ == company._uid_
+  end
+
 end

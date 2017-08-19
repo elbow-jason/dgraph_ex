@@ -17,6 +17,21 @@ defmodule DgraphEx.Repo do
     DgraphEx.Client.send(binary)
   end
 
+  def get(module, uid) when is_binary(uid) and is_atom(module) do
+    DgraphEx.query()
+    |> DgraphEx.func(:get_by_uid, DgraphEx.uid(uid))
+    |> DgraphEx.select(module.__struct__)
+    |> request
+    |> case do
+      {:ok, %{"get_by_uid" => []}} ->
+        nil
+      {:ok, %{"get_by_uid" => [found_by_uid]}} ->
+        Vertex.populate_model(module.__struct__, found_by_uid)
+      err ->
+        err
+    end
+  end
+
   def insert(%{__struct__: _, _uid_: nil} = model) do
     if !Vertex.is_model?(model) do
       raise_vertex_models_only()
