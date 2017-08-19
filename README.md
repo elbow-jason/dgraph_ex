@@ -136,7 +136,11 @@ person = Repo.update(person)
 
 #### get a model by `_uid_`.
 
-Coming soon.
+```elixir
+Repo.get(Company, "0x11c")
+```
+returns `nil` or a populated `%Company{}` 
+
 
 #### find anything
 
