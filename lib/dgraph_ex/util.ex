@@ -67,8 +67,9 @@ defmodule DgraphEx.Util do
     :erlang.function_exported(module, func, arity) 
   end
 
-  def has_struct?(module) do
-    :erlang.function_exported(module, :__struct__, 0) 
+  def has_struct?(module) when is_atom(module) do
+    Code.ensure_loaded?(module)
+    has_function?(module, :__struct__, 0)
   end
 
 end
