@@ -9,7 +9,8 @@ defmodule DgraphExTest do
     Groupby,
   }
 
-  alias DgraphEx.ModelPerson, as: Person
+  alias DgraphEx.ModelPerson,   as: Person
+  alias DgraphEx.ModelCompany,  as: Company
 
   test "groupby/1 function" do
     assert DgraphEx.groupby(:age) == %Groupby{predicate: :age}
@@ -209,25 +210,8 @@ defmodule DgraphExTest do
     assert render(b) == example_from_the_website
   end
 
-  test "DgraphEx.into/3 works for populating models from maps" do
-    payload = %{
-      "spy" => [
-        %{
-          "name" => "John Lakeman",
-          "_uid_" => "123",
-        }
-      ]
-    }
-    assert DgraphEx.into(payload, Person, :spy) == %{
-      spy: [
-        %DgraphEx.ModelPerson{
-          _uid_: "123",
-          age: nil,
-          name: "John Lakeman",
-          works_at: nil,
-        }
-      ]
-    }
+  test "DgraphEx.into/3 works for error tuples" do
+    assert DgraphEx.into({:error, :the_bleep_went_blop}, Person, :spy) == {:error, :the_bleep_went_blop}
   end
 
   test "DgraphEx.into/3 works for ok tuples" do
@@ -251,10 +235,88 @@ defmodule DgraphExTest do
     }
   end
 
-  test "DgraphEx.into/3 works for error tuples" do
-    assert DgraphEx.into({:error, :the_bleep_went_blop}, Person, :spy) == {:error, :the_bleep_went_blop}
+  test "DgraphEx.into/3 works for populating modules from maps" do
+    payload = %{
+      "spy" => [
+        %{
+          "name" => "John Lakeman",
+          "_uid_" => "123",
+        }
+      ]
+    }
+    assert DgraphEx.into(payload, Person, :spy) == %{
+      spy: [
+        %DgraphEx.ModelPerson{
+          _uid_: "123",
+          age: nil,
+          name: "John Lakeman",
+          works_at: nil,
+        }
+      ]
+    }
   end
 
+  test "DgraphEx.into/3 works for invalid keys models from maps" do
+    payload = %{
+      "spy" => [
+        %{
+          "name" => "John Lakeman",
+          "_uid_" => "123",
+        }
+      ]
+    }
+    assert DgraphEx.into(payload, Person, :nope) == {:error, {:invalid_key, :nope}}
+  end
+
+  test "DgraphEx.into/3 works for populating struct from maps" do
+    payload = %{
+      "spy" => [
+        %{
+          "name" => "John Lakeman",
+          "_uid_" => "123",
+        }
+      ]
+    }
+    assert DgraphEx.into(payload, %Person{}, :spy) == %{
+      spy: [
+        %DgraphEx.ModelPerson{
+          _uid_: "123",
+          age: nil,
+          name: "John Lakeman",
+          works_at: nil,
+        }
+      ]
+    }
+  end
+
+
+  test "DgraphEx.into/3 works for nested populating struct from maps" do
+    payload = %{
+      "spy" => [
+        %{
+          "name" => "John Lakeman",
+          "_uid_" => "123",
+          "works_at" => %{
+            "_uid_" => "456",
+            "name" => "Blublublub"
+          }
+        }
+      ]
+    }
+    assert DgraphEx.into(payload, %Person{works_at: Company}, :spy) == %{
+      spy: [
+        %DgraphEx.ModelPerson{
+          _uid_: "123",
+          age: nil,
+          name: "John Lakeman",
+          works_at: %Company{
+            _uid_: "456",
+            name: "Blublublub",
+          },
+        }
+      ]
+    }
+  end
 
 
 end

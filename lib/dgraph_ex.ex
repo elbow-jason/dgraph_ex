@@ -44,16 +44,19 @@ defmodule DgraphEx do
     |> do_into(module, key)
   end
 
-  def do_into(items, module, key) when is_atom(module) do
+  defp do_into({:error, _} = err, _, _) do
+    err
+  end
+  defp do_into(items, module, key) when is_atom(module) do
     do_into(items, module.__struct__, key)
   end
-  def do_into(items, %{} = model, key) when is_list(items) do
+  defp do_into(items, %{} = model, key) when is_list(items) do
     %{ key => Enum.map(items, fn item -> do_into(item, model) end) }
   end
-  def do_into(%{} = item, %{} = model, key) do
+  defp do_into(%{} = item, %{} = model, key) do
     %{ key => do_into(item, model) }
   end
-  def do_into(%{} = item, %{} = model) do
+  defp do_into(%{} = item, %{} = model) do
     Vertex.populate_model(model, item)
   end
 

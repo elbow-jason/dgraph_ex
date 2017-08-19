@@ -225,33 +225,57 @@ defmodule DgraphEx.Vertex do
     default
   end
 
+  def populate_model(_, nil) do
+    # nil params gets you nil.
+    nil
+  end
+  def populate_model(%{__struct__: _} = model, params_list) when is_list(params_list) do
+    # params had a list
+    # so we should populate each item of the list with a model.
+    Enum.map(params_list, fn params -> populate_model(model, params) end)
+  end
+  def populate_model(module, params) when is_atom(module) do
+    populate_model(module.__struct__, params)
+  end
   def populate_model(%{__struct__: module} = model, %{} = params) do
     do_populate_model(module, model |> Map.from_struct, params)
   end
-
   defp do_populate_model(module, model_data, params) do
     model_data
-    |> Enum.reduce(model_data, fn
-      ({key, %{__struct__: _} = sub_model}, model_acc) ->
-        case Util.get_value(params, key, nil) do
-          params_list when is_list(params_list) ->
-            # params had a list
-            # so we should populate each item of the list with a submodel.
-            models = Enum.map(params_list, fn
-              sub_params -> populate_model(sub_model, sub_params)
-            end)
-            Map.put(model_acc, key, models)
-          %{} = sub_params ->
-            # params had a submap so we populate it
-            Map.put(model_acc, key, populate_model(sub_model, sub_params))
-          nil ->
-            # the params had no submap for this key
-            Map.put(model_acc, key, nil)
-        end
-      ({key, model_value}, model_acc) ->
-        value = Util.get_value(params, key, model_value)
-        Map.put(model_acc, key, value)
+    |> Enum.map(fn
+      {key, module} when is_atom(module) and not is_nil(module) ->
+        sub_params = Util.get_value(params, key, nil)
+        {key, populate_model(module.__struct__, sub_params)}
+
+      {key, %{__struct__: _} = sub_model} ->
+        sub_params = Util.get_value(params, key, nil)
+        {key, populate_model(sub_model, sub_params)}
+
+      {key, model_value} ->
+        {key, Util.get_value(params, key, model_value)}
+
+    end)
+    |> Enum.reduce(model_data, fn ({key, value}, model_acc) ->
+      Map.put(model_acc, key, value)
     end)
     |> Map.put(:__struct__, module)
   end
+
+  # defp populate_submodel(sub_model, sub_params) do
+  #   case Util.get_value(params, key, nil) do
+  #     params_list when is_list(params_list) ->
+  #       # params had a list
+  #       # so we should populate each item of the list with a submodel.
+  #       models = Enum.map(params_list, fn
+  #         sub_params -> populate_model(sub_model, sub_params)
+  #       end)
+        
+  #     %{} = sub_params ->
+  #       # params had a submap so we populate it
+  #       populate_model(sub_model, sub_params))
+  #     nil ->
+  #       # the params had no submap for this key
+  #       nil
+  #   end
+  # end
 end
