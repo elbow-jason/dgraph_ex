@@ -2,7 +2,7 @@ defmodule DgraphEx.RepoTest do
   use ExUnit.Case
   doctest DgraphEx.Repo
 
-  alias DgraphEx.{Repo, Vertex}
+  alias DgraphEx.{Repo, Vertex, Changeset}
   alias DgraphEx.Expr.Uid
 
   alias DgraphEx.ModelPerson, as: Person
@@ -170,6 +170,16 @@ defmodule DgraphEx.RepoTest do
   test "Repo.get returns nil if the uid is not found" do
     company = Repo.get(Company, "0x555555")
     assert company == nil
+  end
+
+
+  test "Repo.insert returns error tuple given an invalid changeset" do
+    changes = %{}
+    {:error, %Changeset{} = changeset} =
+      %Company{}
+      |> Company.changeset(changes)
+      |> Repo.insert
+    assert changeset.errors == [name: :invalid_string, name: :cannot_be_nil]
   end
 
 

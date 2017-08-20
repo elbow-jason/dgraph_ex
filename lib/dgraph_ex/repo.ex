@@ -1,5 +1,10 @@
 defmodule DgraphEx.Repo do
-  alias DgraphEx.{Query, Mutation, Vertex}
+  alias DgraphEx.{
+    Query,
+    Vertex,
+    Mutation,
+    Changeset,
+  }
   alias DgraphEx.Expr.Uid
 
   @allowed_modules [
@@ -34,6 +39,14 @@ defmodule DgraphEx.Repo do
     end
   end
 
+  def insert(%Changeset{} = changeset) do
+    case Changeset.uncast(changeset) do
+      {:ok, model} ->
+        insert(model)
+      err ->
+        err
+    end
+  end
   def insert(%{__struct__: _, _uid_: nil} = model) do
     if !Vertex.is_model?(model) do
       raise_vertex_models_only()
