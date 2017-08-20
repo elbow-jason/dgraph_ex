@@ -5,6 +5,7 @@ defmodule DgraphEx.ChangesetTest do
   alias DgraphEx.Changeset
 
   alias DgraphEx.ModelPerson, as: Person
+  alias DgraphEx.ModelCompany, as: Company
 
 
   test "a changeset defaults to invalid" do
@@ -65,7 +66,7 @@ defmodule DgraphEx.ChangesetTest do
       |> Changeset.cast(%{name: "Bleep"}, [:name, :age])
       |> Changeset.validate_required([:name, :age])
   
-    assert !Map.has_key?(cs.changes, :age)
+    assert cs.changes == %{name: "Bleep"}
     assert cs.errors == [{:age, :cannot_be_nil}]
   end
 
@@ -134,6 +135,35 @@ defmodule DgraphEx.ChangesetTest do
     }}
   end
 
-  test "validate_child can validate a child/submodel correctly" do
+  test "validate_model can puts no error when model is nil" do
+    # if you want a non-nil model then use validate_required.
+    changeset =
+      %Person{}
+      |> Changeset.cast(%{name: :nope, age: :nope}, [:name, :age])
+      |> Changeset.validate_model(:works_at, Company, :changeset)
+      # |> Changeset.uncast()
+    assert changeset.errors == []
   end
+
+  test "validate_model uses put_error when field changes are an invalid map" do
+    changes = %{"name" => "Jason", "age" => 33, "works_at" => %{}}
+    changeset =
+      %Person{}
+      |> Changeset.cast(changes, [:name, :age, :works_at])
+      |> Changeset.validate_model(:works_at, Company, :changeset)
+    assert changeset.errors == [works_at: [name: :invalid_string, name: :cannot_be_nil]]
+  end
+
+  test "validate_model puts not errors when field changes are an valid map" do
+    changes = %{"name" => "Jason", "age" => 33, "works_at" => %{
+      "name" => "Home"
+    }}
+    changeset =
+      %Person{}
+      |> Changeset.cast(changes, [:name, :age, :works_at])
+      |> Changeset.validate_model(:works_at, Company, :changeset)
+    assert changeset.errors == []
+  end
+
+
 end

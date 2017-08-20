@@ -1,6 +1,6 @@
 defmodule DgraphEx.Changeset do
   alias DgraphEx.Changeset, as: Cs
-  alias DgraphEx.{Field, Vertex, Types}
+  alias DgraphEx.{Field, Vertex, Types, Util}
   
   defstruct [
     module:   nil,
@@ -8,6 +8,8 @@ defmodule DgraphEx.Changeset do
     changes:  nil,
     errors:   nil,
   ]
+
+  
 
   @doc """
   In `cast/3` we do 3 things:
@@ -25,9 +27,19 @@ defmodule DgraphEx.Changeset do
     %Cs{
       module: module,
       model: model |> Map.from_struct |> Map.put(:_uid_, model._uid_),
-      changes: Map.take(changes, allowed_fields),
+      changes: filter_allowed_fields(changes, allowed_fields),
       errors: [],
     }
+  end
+
+  defp filter_allowed_fields(changes, allowed_fields) do
+    changes
+    |> Map.take(allowed_fields ++ Enum.map(allowed_fields, &to_string/1))
+    |> Enum.map(fn
+      {k, v} when is_atom(k) -> {k, v}
+      {k, v} when is_binary(k) -> {String.to_existing_atom(k), v}
+    end)
+    |> Enum.into(%{})
   end
 
   @doc """
@@ -75,8 +87,44 @@ defmodule DgraphEx.Changeset do
     false
   end
 
-  def put_error(%Cs{errors: errors} = cs, {key, reason} = err) when is_atom(key) and is_atom(reason) do
+  def put_error(%Cs{errors: errors} = cs, {key, _} = err) when is_atom(key) do
     %{ cs | errors: [ err | errors ]}
+  end
+  def put_error(%Cs{} = cs, key, reason) when is_list(reason)
+                                         when is_atom(reason) do
+    put_error(cs, {key, reason})
+  end
+
+  def validate_model(%Cs{} = cs, field_name, module, func_name) do
+    cs
+    |> do_get_value(field_name)
+    |> case do
+      nil ->
+        # it was nil. do nothing.
+        cs
+      %{__struct__: _} = submodel ->
+        # found a module's struct i dont know how...
+        # turn it to a map and
+        # use the model as model
+        # and use the map as the changes
+        validate_other_model(cs, field_name, module, func_name, submodel, submodel |> Map.from_struct)
+      %{} = changes ->
+        validate_other_model(cs, field_name, module, func_name, module.__struct__, changes)
+      changes_list when is_list(changes_list) ->
+        changes_list
+        |> Enum.reduce(cs, fn changes ->
+          validate_other_model(cs, field_name, module, func_name, module.__struct__, changes)
+        end)
+    end
+  end
+
+  defp validate_other_model(cs, field_name, module, func_name, model, changes) do
+    case apply(module, func_name, [model, changes]) do
+      %{errors: []} ->
+        cs
+      %{errors: errors} when length(errors) > 1 ->
+        put_error(cs, field_name, errors)
+    end
   end
 
   def validate_required(%Cs{} = cs, required_fields) do
@@ -126,11 +174,7 @@ defmodule DgraphEx.Changeset do
   end
 
   defp do_get_value(%Cs{model: model, changes: changes}, key) do
-    if Map.has_key?(changes, key) do
-      Map.get(changes, key)
-    else
-      Map.get(model, key)
-    end
+    Util.get_value(changes, key, model[key])
   end
 
   defp do_validate_types(types, value) do
