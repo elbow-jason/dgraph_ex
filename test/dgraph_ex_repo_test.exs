@@ -182,5 +182,16 @@ defmodule DgraphEx.RepoTest do
     assert changeset.errors == [name: :invalid_string, name: :cannot_be_nil]
   end
 
+  test "Repo.insert returns an inserted model if everything is ok" do
+    changes = %{name: "Wot"}
+    company =
+      %Company{}
+      |> Company.changeset(changes)
+      |> Repo.insert
+    assert company.__struct__ == Company
+    assert company.name == "Wot"
+    assert company._uid_ |> is_binary
+  end
+
 
 end
