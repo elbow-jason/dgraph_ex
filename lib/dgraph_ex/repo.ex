@@ -63,6 +63,14 @@ defmodule DgraphEx.Repo do
     end
   end
 
+  def update(%Changeset{} = changeset) do
+    case Changeset.uncast(changeset) do
+      {:ok, model} ->
+        update(model)
+      err ->
+        err
+    end
+  end
   def update(%{__struct__: module, _uid_: uid} = model) when is_binary(uid) do
     model
     |> do_update

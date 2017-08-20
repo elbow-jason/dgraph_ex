@@ -193,5 +193,33 @@ defmodule DgraphEx.RepoTest do
     assert company._uid_ |> is_binary
   end
 
+  test "Repo.update returns an error tuple for invalid changes" do
+    company1 = Repo.insert(%Company{
+      name: "Flim",
+    })
+    changes = %{name: 1}
+    {:error, %Changeset{} = changeset} =
+      company1
+      |> Company.changeset(changes)
+      |> Repo.update
+    assert changeset.errors == [name: :invalid_string]
+  end
+
+  test "Repo.update returns an inserted model for valid changes" do
+    company1 = Repo.insert(%Company{
+      name: "Flim",
+    })
+    changes = %{name: "Beefer"}
+    company2 =
+      company1
+      |> Company.changeset(changes)
+      |> Repo.update
+
+    assert company2._uid_ == company1._uid_
+    assert company2.name == "Beefer"
+    company3 = Repo.get(Company, company1._uid_)
+    assert company2 == company3
+  end
+
 
 end
