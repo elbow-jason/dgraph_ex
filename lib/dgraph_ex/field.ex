@@ -161,6 +161,9 @@ defmodule DgraphEx.Field do
   def put_object(%Field{type: :uid_literal} = field, ""<>uid) do
     do_put_object(field, uid |> Uid.new |> Uid.as_literal)
   end
+  def put_object(%Field{type: :geo} = field, coords) when is_list(coords) do
+    do_put_object(field, coords)
+  end
 
   defp do_put_object(field, value) do
     %{ field | object: value }

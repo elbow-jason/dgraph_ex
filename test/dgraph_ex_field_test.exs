@@ -20,4 +20,15 @@ defmodule DgraphEx.FieldTest do
     assert Field.as_setter(my_field) == "<1234> <owner> <5678> ."
   end
 
+  test "put_object works with a geo field" do
+    some_location = [-112.44615353350031, 33.35600630797468]
+    the_field = %Field{
+      subject:    %Uid{value: "1234", type: :literal},
+      type:       :geo,
+      predicate:  :location,
+    }
+    |> Field.put_object(some_location)
+    assert the_field.object == some_location
+  end
+
 end

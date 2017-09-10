@@ -60,4 +60,8 @@ defmodule DgraphEx do
     Vertex.populate_model(model, item)
   end
 
+  def thing do
+    :ok
+  end
+
 end
