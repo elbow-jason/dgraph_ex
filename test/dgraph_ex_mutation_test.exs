@@ -58,6 +58,7 @@ defmodule DgraphEx.MutationTest do
         schema {
           name: string @index(exact, terms) .
           owner: uid @reverse .
+          location: geo @index(geo) .
         }
     }
     """) == mutation()

@@ -221,5 +221,17 @@ defmodule DgraphEx.RepoTest do
     assert company2 == company3
   end
 
-
+  test "inserting a geo point works" do
+    company1 = %Company{
+      name: "Flim",
+      location: [-122.50326097011566,37.73353615592843],
+    } |> Repo.insert
+    # rendered = 
+    #   DgraphEx.mutation
+    #   |> DgraphEx.set(company1)
+    #   |> DgraphEx.render
+    # assert rendered == "blep"
+    assert company1.location == [ -122.50326097011566, 37.73353615592843 ]
+    assert company1._uid_ |> is_binary
+  end
 end

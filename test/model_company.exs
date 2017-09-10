@@ -6,13 +6,15 @@ defmodule DgraphEx.ModelCompany do
   
 
   vertex :company do
-    field :name, :string, index: [:exact, :terms]
-    field :owner, :uid, model: Person, reverse: true
+    field :name,      :string, index: [:exact, :terms]
+    field :owner,     :uid, model: Person, reverse: true
+    field :location,  :geo, index: true
   end
 
   @allowed_fields [
     :name,
     :owner,
+    :location,
   ]
 
   def changeset(%Company{} = model, %{} = changes) do

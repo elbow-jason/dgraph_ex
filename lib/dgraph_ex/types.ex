@@ -18,7 +18,7 @@ defmodule DgraphEx.Types do
     iex> DgraphEx.Types.validate(:geo, [1.0, 0.1])
     :ok
 
-    iex> DgraphEx.Types.validate(:geo, [[1.0, 0.1]])
+    iex> DgraphEx.Types.validate(:geo, [[[1.0, 0.1], [1.0, 0.2], [1.1, 0.2], [1.0, 0.1]]])
     :ok
 
     iex> DgraphEx.Types.validate(:geo, nil)

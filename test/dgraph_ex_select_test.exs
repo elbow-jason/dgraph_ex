@@ -62,6 +62,7 @@ defmodule DgraphEx.SelectTest do
         name
         works_at {
           _uid_
+          location
           name
           owner
           {
@@ -111,6 +112,7 @@ defmodule DgraphEx.SelectTest do
           name
           works_at {
             _uid_
+            location
             name
           }
         }

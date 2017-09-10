@@ -243,6 +243,20 @@ defmodule DgraphEx.Field do
   #   |> Uid.new
   #   |> Uid.render
   # end
+  defp render_setter_object(%Field{object: [long, lat] = point, type: :geo}) when is_float(long) and is_float(lat) do
+    point
+    |> Poison.encode!
+    |> wrap_geo_point
+    |> Kernel.<>(type_annotation(:geo))
+  end
+  defp render_setter_object(%Field{object: [[[long, lat] | _ ] = shape | _ ] = polygon, type: :geo})
+    when length(shape) >= 4 and is_float(long) and is_float(lat) do
+    polygon
+    |> Poison.encode!
+    |> wrap_geo_polygon
+    |> Kernel.<>(type_annotation(:geo))
+  end
+
   defp render_setter_object(%Field{object: object, type: type}) do
     (object |> stringify |> wrap_quotes) <> type_annotation(type)
   end
@@ -398,6 +412,13 @@ defmodule DgraphEx.Field do
           |> Enum.join(",")
         " ("<>facet_string<>")"
     end
+  end
+
+  defp wrap_geo_point(point) do
+    ~s("{'type':'Point','coordinates':#{point}}")
+  end
+  defp wrap_geo_polygon(polygon) do
+    ~s("{'type':'Polygon','coordinates':#{polygon}}")
   end
 
 end

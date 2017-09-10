@@ -31,4 +31,37 @@ defmodule DgraphEx.FieldTest do
     assert the_field.object == some_location
   end
 
+  test "geo point renders correctly" do
+    some_location = [-112.44615353350031, 33.35600630797468]
+    the_field =
+      %Field{
+        subject:    %Uid{value: "1234", type: :literal},
+        type:       :geo,
+        predicate:  :location,
+      }
+      |> Field.put_object(some_location)
+    assert the_field.object == some_location
+    assert Field.as_setter(the_field) == "<1234> <location> \"{'type':'Point','coordinates':[-112.44615353350031,33.35600630797468]}\"^^<geo:geojson> ."
+  end
+
+  test "geo polygon renders correctly" do
+    some_polygon = [[
+      [-122.503325343132, 37.73345766902749 ],
+      [ -122.503325343132, 37.733903134117966 ],
+      [ -122.50271648168564, 37.733903134117966 ],
+      [ -122.50271648168564, 37.73345766902749 ],
+      [ -122.503325343132, 37.73345766902749],
+    ]]
+    the_field =
+      %Field{
+        subject:    %Uid{value: "1234", type: :literal},
+        type:       :geo,
+        predicate:  :some_polygon,
+      }
+      |> Field.put_object(some_polygon)
+    assert the_field.object == some_polygon
+    assert Field.as_setter(the_field) ==  "<1234> <some_polygon> \"{'type':'Polygon','coordinates':[[[-122.503325343132,37.73345766902749],[-122.503325343132,37.733903134117966],[-122.50271648168564,37.733903134117966],[-122.50271648168564,37.73345766902749],[-122.503325343132,37.73345766902749]]]}\"^^<geo:geojson> ."
+  end
+
+
 end
