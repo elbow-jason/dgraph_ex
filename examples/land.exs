@@ -1,6 +1,6 @@
-defmodule DgraphEx.Example.Land do
+defmodule DgraphEx.Examples.Land do
   use DgraphEx.Vertex
-  alias DgraphEx.Example.{Land, Person}
+  alias DgraphEx.Examples.{Land, Person}
 
   vertex :land do
     field :address,             :string,  index: [:exact, :term],  count: true
@@ -32,10 +32,10 @@ defmodule DgraphEx.Example.Land do
     geo_center
     geo_border
   )a
+  
 
   def land_example() do
     %Land{
-      parcel_number: "fake",
       address: "123 Maple Rd Phoenix, AZ 88888",
       zipcode: "88888",
       city: "Phoenix",
@@ -44,7 +44,6 @@ defmodule DgraphEx.Example.Land do
       zoning: "FAKE",
       floors: 1,
       construction_year: "1982",
-      assessor_sale_price: 4,
       owner: %Person{
         name: "Jason Beefcake",
         address: "456 Maple Rd Phoenix, AZ 55555",
