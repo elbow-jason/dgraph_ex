@@ -63,5 +63,17 @@ defmodule DgraphEx.FieldTest do
     assert Field.as_setter(the_field) ==  "<1234> <some_polygon> \"{'type':'Polygon','coordinates':[[[-122.503325343132,37.73345766902749],[-122.503325343132,37.733903134117966],[-122.50271648168564,37.733903134117966],[-122.50271648168564,37.73345766902749],[-122.503325343132,37.73345766902749]]]}\"^^<geo:geojson> ."
   end
 
+  test "a field can be of type password and be put_objected and renders correctly" do
+    the_field = 
+      %Field{
+        subject:    %Uid{value: "1234", type: :literal},
+        type:       :password,
+        predicate:  :user_pw,
+      }
+      |> Field.put_object("12345")
+    assert the_field.object == "12345"
+    assert Field.as_setter(the_field) == "<1234> <user_pw> \"12345\"^^<pwd:password> ."
+    
+  end
 
 end

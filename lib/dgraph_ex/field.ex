@@ -164,6 +164,9 @@ defmodule DgraphEx.Field do
   def put_object(%Field{type: :geo} = field, coords) when is_list(coords) do
     do_put_object(field, coords)
   end
+  def put_object(%Field{type: :password} = field, value) when is_binary(value) do
+    do_put_object(field, value)
+  end
 
   defp do_put_object(field, value) do
     %{ field | object: value }
