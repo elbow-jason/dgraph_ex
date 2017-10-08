@@ -16,7 +16,7 @@ Works with dgraph v0.8.1 (most current release as of 16 AUG 2017)
 
 ```elixir
 def deps do
-  [{:dgraph_ex, "~> 0.1.4"}]
+  [{:dgraph_ex, "~> 0.1.5"}]
 end
 ```
 
