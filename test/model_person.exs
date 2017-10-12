@@ -8,6 +8,7 @@ defmodule DgraphEx.ModelPerson do
     field :name,      :string
     field :age,       :int
     field :works_at,  :uid, model: Company
+    field :company_count, :int, virtual: true
   end
 
   @allowed_fields [

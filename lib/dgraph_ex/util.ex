@@ -1,4 +1,5 @@
 defmodule DgraphEx.Util do
+  alias DgraphEx.Field
   alias DgraphEx.Expr.Uid
 
   def as_rendered(value) do
@@ -79,6 +80,19 @@ defmodule DgraphEx.Util do
       Map.has_key?(params, str_key) -> Map.get(params, str_key)
       true -> default
     end
+  end
+
+  @doc """
+  Return the predicate fields that aren't virtuals
+  """
+  def get_valid_predicates(module) when is_atom(module) do
+    module.__vertex__(:fields)
+    |> Enum.flat_map(fn 
+      %Field{virtual: true} ->
+        []
+      %Field{predicate: value} ->
+        [value]
+    end)
   end
 
 end

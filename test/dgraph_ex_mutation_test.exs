@@ -18,6 +18,17 @@ defmodule DgraphEx.MutationTest do
       |> render
   end
 
+  test "render mutation set with a model and virtual field" do
+    expected = "mutation { set { _:person <name> \"Bleeeeeeeeeeeigh\"^^<xs:string> .\n_:person <age> \"21\"^^<xs:int> . } }"
+    assert expected == mutation()
+      |> set(%Person{
+        age: 21,
+        name: "Bleeeeeeeeeeeigh",
+        company_count: 25
+      })
+      |> render
+  end
+
   test "render mutation set" do
     assert clean_format("""
       mutation {
