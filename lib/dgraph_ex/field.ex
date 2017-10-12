@@ -117,6 +117,9 @@ defmodule DgraphEx.Field do
     %{ field | subject: subject }
   end
 
+  def put_object(%Field{virtual: true}, _) do
+    
+  end
   def put_object(%Field{type: :int} = field, value) do
     case value do
       x when is_integer(x) ->
