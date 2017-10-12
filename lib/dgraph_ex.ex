@@ -60,8 +60,30 @@ defmodule DgraphEx do
     Vertex.populate_model(model, item)
   end
 
-  def thing do
-    :ok
+  @doc """
+  Gets the resolve result from 
+  """
+  @spec resolve_field(module, atom) :: {:ok, String.t} | {:ok, function} | {:error, term}
+  def resolve_field(module, atom) when is_atom(module) and is_atom(atom) do
+    case Enum.find(module.__vertex__(:fields), fn(%DgraphEx.Field{predicate: name}) -> atom == name end) do
+      nil -> 
+        {:error, "The given atom isn't valid for the module struct"}
+      %DgraphEx.Field {resolve: nil} ->
+        {:error, "This field doesn't contains any resolver"}
+      %DgraphEx.Field {resolve: resolve} ->
+        {:ok, resolve}
+    end
+  end
+  @spec resolve_field(list, atom) :: {:ok, String.t} | {:ok, function} | {:error, term}
+  def resolve_field(fields, atom) when is_list(fields) and is_atom(atom) do
+    case Enum.find(fields, fn(%DgraphEx.Field{predicate: name}) -> atom == name end) do
+      nil ->
+        {:error, "The given atom isn't valid for the module struct"}
+      %DgraphEx.Field {resolve: nil} ->
+        {:error, "This field doesn't contains any resolver"}
+      %DgraphEx.Field {resolve: resolve} ->
+        {:ok, resolve}
+    end
   end
 
 end

@@ -15,6 +15,7 @@ defmodule DgraphEx.Field do
     :virtual,
     :reverse,
     :model,
+    :resolve
   ]
 
   @allowed_types [
@@ -91,6 +92,7 @@ defmodule DgraphEx.Field do
       virtual:    !!options[:virtual],
       reverse:    !!options[:reverse],
       model:      options[:model],
+      resolve:    options[:resolve]
     }
   end
 
