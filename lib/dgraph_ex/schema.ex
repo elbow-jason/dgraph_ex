@@ -23,9 +23,7 @@ defmodule DgraphEx.Schema do
         }
       end
 
-      @doc """
-      Get all the fields that are not marked as virtual
-      """
+      # Get all the fields that are not marked as virtual
       defp get_non_virtual_fields(module) when is_atom(module) do
         module.__vertex__(:fields)
         |> Enum.filter(&(&1.virtual == nil || &1.virtual == false))
