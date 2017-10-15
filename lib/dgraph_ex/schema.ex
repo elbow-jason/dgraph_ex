@@ -22,11 +22,18 @@ defmodule DgraphEx.Schema do
           message: "schema only responds to Vertex models. #{module} does not use DgraphEx.Vertex"
         }
       end
+
+      # Get all the fields that are not marked as virtual
+      defp get_non_virtual_fields(module) when is_atom(module) do
+        module.__vertex__(:fields)
+        |> Enum.filter(&(&1.virtual == nil || &1.virtual == false))
+      end
+
       def schema(%Mutation{} = mut, module) when is_atom(module) do
         if Vertex.is_model?(module) do
           Mutation.put_sequence(mut, %Schema{
             context: :mutation,
-            fields: module.__vertex__(:fields),
+            fields: get_non_virtual_fields(module),
           })
         else
           raise_non_vertex_module(module)
@@ -53,7 +60,7 @@ defmodule DgraphEx.Schema do
       def schema(module) when is_atom(module) do
         if Vertex.is_model?(module) do
           fields = 
-            module.__vertex__(:fields)
+            get_non_virtual_fields(module)
             |> Enum.map(fn %Field{predicate: pred} -> pred end)
           %Schema{
             fields: fields, 

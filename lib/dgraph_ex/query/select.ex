@@ -34,11 +34,13 @@ defmodule DgraphEx.Query.Select do
     |> Tuple.to_list
     |> new
   end
+  # Accepts structs as argument Example: %Person{}
   def new(%{__struct__: _} = model) do
     model
     |> Vertex.as_selector
     |> new
   end
+  # Accepts atoms and modules as argument
   def new(atom) when is_atom(atom) do
     if Util.has_struct?(atom) do
       new(atom.__struct__)

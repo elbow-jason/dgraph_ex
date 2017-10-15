@@ -66,10 +66,11 @@ defmodule DgraphEx.Vertex do
   def as_selector(module) when is_atom(module) do
     as_selector(module.__struct__)
   end
-  def as_selector(model = %{__struct__: _}) do
+  def as_selector(model = %{__struct__: module}) do
     model
     |> Map.from_struct
     |> Map.drop([:__struct__])
+    |> Map.take(Util.get_valid_predicates(module))
     |> Enum.filter(fn
       {_, false} -> false
       _ -> true

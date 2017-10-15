@@ -318,5 +318,16 @@ defmodule DgraphExTest do
     }
   end
 
+  test "resolve given valid field name" do
+    assert DgraphEx.resolve_field(Person, :company_count) == {:ok, "count(works_at)"}
+  end
+
+  test "resolve given valid field name without resolve" do
+    assert DgraphEx.resolve_field(Person, :works_at) == {:ok, :no_resolver}
+  end
+
+  test "resolve given invalid valid field name" do
+    assert DgraphEx.resolve_field(Person, :company_counters) == {:error, :invalid}
+  end
 
 end
