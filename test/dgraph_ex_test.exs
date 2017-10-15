@@ -323,11 +323,11 @@ defmodule DgraphExTest do
   end
 
   test "resolve given valid field name without resolve" do
-    assert DgraphEx.resolve_field(Person, :works_at) == {:error, "This field doesn't contains any resolver"}
+    assert DgraphEx.resolve_field(Person, :works_at) == {:ok, :no_resolver}
   end
 
   test "resolve given invalid valid field name" do
-    assert DgraphEx.resolve_field(Person, :company_counters) == {:error, "The given atom isn't valid for the module struct"}
+    assert DgraphEx.resolve_field(Person, :company_counters) == {:error, :invalid}
   end
 
 end

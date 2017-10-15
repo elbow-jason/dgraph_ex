@@ -63,24 +63,24 @@ defmodule DgraphEx do
   @doc """
   Gets the resolve result from 
   """
-  @spec resolve_field(module, atom) :: {:ok, String.t} | {:ok, function} | {:error, term}
+  @spec resolve_field(module, atom) :: {:ok, String.t} | {:ok, function} | {:error, :invalid} | {:error, :no_resolver}
   def resolve_field(module, atom) when is_atom(module) and is_atom(atom) do
     case Enum.find(module.__vertex__(:fields), fn(%DgraphEx.Field{predicate: name}) -> atom == name end) do
       nil -> 
-        {:error, "The given atom isn't valid for the module struct"}
+        {:error, :invalid}
       %DgraphEx.Field {resolve: nil} ->
-        {:error, "This field doesn't contains any resolver"}
+        {:ok, :no_resolver}
       %DgraphEx.Field {resolve: resolve} ->
         {:ok, resolve}
     end
   end
-  @spec resolve_field(list, atom) :: {:ok, String.t} | {:ok, function} | {:error, term}
+  @spec resolve_field(list, atom) :: {:ok, String.t} | {:ok, function} | {:error, :invalid} | {:error, :no_resolver}
   def resolve_field(fields, atom) when is_list(fields) and is_atom(atom) do
     case Enum.find(fields, fn(%DgraphEx.Field{predicate: name}) -> atom == name end) do
-      nil ->
-        {:error, "The given atom isn't valid for the module struct"}
+      nil -> 
+        {:error, :invalid}
       %DgraphEx.Field {resolve: nil} ->
-        {:error, "This field doesn't contains any resolver"}
+        {:error, :no_resolver}
       %DgraphEx.Field {resolve: resolve} ->
         {:ok, resolve}
     end
