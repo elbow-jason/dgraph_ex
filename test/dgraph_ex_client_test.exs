@@ -9,7 +9,7 @@ defmodule DgraphEx.ClientTest do
   
   test "" do
     query = """
-      mutation {
+      {
         set {
           _:company <name>  "TurfBytes"^^<xs:string> .
           _:company <owner> _:owner .
@@ -18,7 +18,7 @@ defmodule DgraphEx.ClientTest do
       }
     """
 
-    {:ok, response} = Client.send(query)
+    {:ok, response} = Client.send(body: query)
     assert response["code"] == "Success"
     assert response["message"] == "Done"
     %{"company" => company_uid, "owner" => owner_uid} = response["uids"]

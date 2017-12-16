@@ -1,6 +1,6 @@
-defmodule DgraphEx.MutationTest do
+defmodule DgraphEx.SetTest do
   use ExUnit.Case
-  doctest DgraphEx.Mutation
+  # doctest DgraphEx.Mutation
 
   import DgraphEx
   import TestHelpers
@@ -8,41 +8,40 @@ defmodule DgraphEx.MutationTest do
   alias DgraphEx.ModelPerson, as: Person
   alias DgraphEx.ModelCompany, as: Company
 
-  test "render mutation set with a model" do
-    expected = "mutation { set { _:person <name> \"Bleeeeeeeeeeeigh\"^^<xs:string> .\n_:person <age> \"21\"^^<xs:int> . } }"
-    assert expected == mutation()
-      |> set(%Person{
-        age: 21,
-        name: "Bleeeeeeeeeeeigh"
-      })
-      |> render
+  test "render set with a model" do
+    expected = "{ set { _:person <name> \"Bleeeeeeeeeeeigh\"^^<xs:string> .\n_:person <age> \"21\"^^<xs:int> . } }"
+    assert expected == %Person{
+      age: 21,
+      name: "Bleeeeeeeeeeeigh"
+    }
+    |> set()
+    |> render()
   end
 
   test "render mutation set" do
     assert clean_format("""
-      mutation {
+      {
         set {
           _:person <name> \"Jason\"^^<xs:string> .
         }
       }
     """) ==
-    mutation()
-    |> set
+    set()
     |> field(:person, :name, "Jason", :string)
     |> render
   end
 
   test "render mutation set can handle a nested model" do
-    assert mutation()
-    |> set(%Company{
+    assert %Company{
       name: "TurfBytes",
       owner: %Person{
         name: "Jason"
       }
-    })
+    }
+    |> set
     |> render
     |> clean_format == clean_format("""
-      mutation {
+      {
         set {
           _:company <name>  "TurfBytes"^^<xs:string> .
           _:company <owner> _:owner .
@@ -54,38 +53,36 @@ defmodule DgraphEx.MutationTest do
 
   test "render mutation schema given a model" do
     assert clean_format("""
-      mutation {
+      {
         schema {
           name: string @index(exact, terms) .
           owner: uid @reverse .
           location: geo @index(geo) .
         }
     }
-    """) == mutation()
-    |> schema(Company)
+    """) ==
+    schema(Company)
     |> render
     |> clean_format
   end
 
   test "render mutation delete given (%Muation{}, uid, field_name, value)" do
-    assert mutation()
-    |> delete(uid("123"), :name, "Jason")
+    assert delete(uid("123"), :name, "Jason")
     |> render
     |> clean_format == clean_format("""
-      mutation {
-        delete {
-          <123> <name> "Jason" .
+        {
+          delete {
+            <123> <name> "Jason" .
+          }
         }
-      }
     """)
   end
 
   test "render mutation delete can take wildcards" do
-    assert mutation()
-    |> delete("*", :name, "Jason")
+    assert delete("*", :name, "Jason")
     |> render
     |> clean_format == clean_format("""
-      mutation {
+      {
         delete {
           * <name> "Jason" .
         }
@@ -94,11 +91,10 @@ defmodule DgraphEx.MutationTest do
   end
 
   test "render mutation delete can delete all the edges" do
-    assert mutation()
-    |> delete("*", "*", "*")
+    assert delete("*", "*", "*")
     |> render
     |> clean_format == clean_format("""
-      mutation {
+      {
         delete {
           * * * .
         }
@@ -107,14 +103,13 @@ defmodule DgraphEx.MutationTest do
   end
 
   test "render mutation delete can take a block" do
-    assert mutation()
-    |> delete({
+    assert delete({
       field(uid("1234"), :name, "Jason"),
       field(uid("3456"), :name, "Wimu"),
     })
     |> render
     |> clean_format == clean_format("""
-      mutation {
+      {
         delete {
           <1234> <name> \"Jason\" .
           <3456> <name> \"Wimu\" .
@@ -124,16 +119,13 @@ defmodule DgraphEx.MutationTest do
   end
 
   test "render mutation delete can take a Field as the second arg" do
-    assert mutation()
-    |> delete(field(uid("1235"), :name, "Jason"))
+    assert delete(field(uid("1235"), :name, "Jason"))
     |> delete(field(uid("1234"), :name, "Jason"))
     |> render
     |> clean_format == clean_format("""
-      mutation {
+      {
         delete {
           <1235> <name> \"Jason\" .
-        }
-        delete {
           <1234> <name> \"Jason\" .
         }
       }
@@ -141,15 +133,15 @@ defmodule DgraphEx.MutationTest do
   end
 
   test "render mutation set uses the uid as the subject when provided" do
-    assert mutation()
-    |> set(%Person{
+    assert %Person{
       _uid_: "6789",
       name: "Buffy",
       age: 20,
-    })
-    |> render
-    |> clean_format == clean_format("""
-      mutation {
+    }
+    |> set()
+    |> render()
+    |> clean_format() == clean_format("""
+      {
         set {
           <6789> <name> "Buffy"^^<xs:string> .
           <6789> <age> "20"^^<xs:int> .
@@ -168,11 +160,10 @@ defmodule DgraphEx.MutationTest do
       }
     }
 
-    assert mutation()
-    |> set(model)
+    assert set(model)
     |> render
     |> clean_format == clean_format("""
-      mutation {
+      {
         set {
           <1234> <name> \"Flim\"^^<xs:string> .
           <1234> <owner> <5678> .
@@ -181,7 +172,5 @@ defmodule DgraphEx.MutationTest do
       }
     """)
   end
-
-
 
 end

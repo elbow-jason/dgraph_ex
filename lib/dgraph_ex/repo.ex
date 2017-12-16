@@ -2,24 +2,24 @@ defmodule DgraphEx.Repo do
   alias DgraphEx.{
     Query,
     Vertex,
-    Mutation,
+    Set,
     Changeset,
   }
   alias DgraphEx.Expr.Uid
 
   @allowed_modules [
     Query,
-    Mutation,
+    Set,
   ]
 
-  def request(%{__struct__: module} = model) when module in @allowed_modules do
+  def request(%module{} = model) when module in @allowed_modules do
     model
     |> DgraphEx.render
     |> request
   end
 
   def request(binary) when is_binary(binary) do
-    DgraphEx.Client.send(binary)
+    DgraphEx.Client.send([binary])
   end
 
   def get(module, uid) when is_binary(uid) and is_atom(module) do
@@ -52,8 +52,8 @@ defmodule DgraphEx.Repo do
       raise_vertex_models_only()
     end
     prev_uids = Vertex.extract_uids(model)
-    DgraphEx.mutation()
-    |> DgraphEx.set(model)
+    model
+    |> DgraphEx.set()
     |> request
     |> case do
       {:ok, %{"code" => "Success", "message" => "Done", "uids" => uids}} ->

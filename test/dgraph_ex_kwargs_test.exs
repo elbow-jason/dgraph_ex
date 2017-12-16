@@ -178,7 +178,7 @@ defmodule DgraphEx.KwargsTest do
   end
 
   test "mutation set works" do
-    assert mutation([
+    assert set([
       set: %Person{
         name: "jason",
         age: 33,
@@ -196,7 +196,7 @@ defmodule DgraphEx.KwargsTest do
   end
 
   test "mutation schema works" do
-    assert mutation([
+    assert set([
       schema: Person
     ])
     |> render
@@ -212,7 +212,7 @@ defmodule DgraphEx.KwargsTest do
   end
 
   test "mutation delete works for a field" do
-    assert mutation([
+    assert query([
       delete: field(uid("1234567"), "*", "*")
     ])
     |> render
@@ -227,7 +227,7 @@ defmodule DgraphEx.KwargsTest do
 
 
   test "mutation delete works for tuple of fields " do
-    assert mutation([
+    assert query([
       delete: {
         field(uid("1234567"), "*", "*"),
         field(uid("1234567890"), "*", "*"),
@@ -245,7 +245,7 @@ defmodule DgraphEx.KwargsTest do
   end
 
   test "a complex mutation" do
-    assert mutation([
+    assert query([
       delete: {
         field(uid("0x123"), :name, "Jason"),
       },

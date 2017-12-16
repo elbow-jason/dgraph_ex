@@ -16,10 +16,10 @@ defmodule DgraphEx.RepoTest do
       name: "Flinn"
     })
     model = company1 |> Map.put(:owner, person1)
-    assert DgraphEx.mutation()
-    |> DgraphEx.set(model)
-    |> DgraphEx.render
-    |> Repo.request == {:ok, %{"code" => "Success", "message" => "Done", "uids" => %{}}}
+    assert model
+      |> DgraphEx.set()
+      |> DgraphEx.render
+      |> Repo.request == {:ok, %{"code" => "Success", "message" => "Done", "uids" => %{}}}
   end
 
   test "nested models have their _uid_ fields filled in after being inserted" do

@@ -66,7 +66,7 @@ defmodule DgraphEx.Vertex do
   def as_selector(module) when is_atom(module) do
     as_selector(module.__struct__)
   end
-  def as_selector(model = %{__struct__: _}) do
+  def as_selector(%_{} = model) do
     model
     |> Map.from_struct
     |> Map.drop([:__struct__])
@@ -75,12 +75,16 @@ defmodule DgraphEx.Vertex do
       _ -> true
     end)
     |> Enum.map(fn
-      {key, %{__struct__: _} = submodel} -> { key, Query.Select.new(submodel) }
+      {key, %_{} = submodel} -> { key, Query.Select.new(submodel) }
       {key, _} -> {key, nil}
     end)
   end
 
-  def populate_fields(subject, model = %{__struct__: module}) do
+  def populate_fields(nil, %module{} = model) do
+    subject = module.__vertex__(:default_label)
+    populate_fields(subject, model)
+  end
+  def populate_fields(subject, %module{} = model) do
     populate_fields(subject, module, model)
   end
   def populate_fields(subject, module, model) do
@@ -117,7 +121,7 @@ defmodule DgraphEx.Vertex do
   def join_model_and_uids(model, uids, label) when is_atom(label) do
     join_model_and_uids(model, uids, to_string(label))
   end
-  def join_model_and_uids(%{__struct__: _} = model, uids, label) when is_binary(label) do
+  def join_model_and_uids(%_{} = model, uids, label) when is_binary(label) do
     uid = Map.get(uids, label)
     model
     |> Map.from_struct

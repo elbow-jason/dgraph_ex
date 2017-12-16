@@ -61,8 +61,8 @@ defmodule DgraphEx.SchemaTest do
         }
       }
     """) ==
-    mutation()
-    |> schema({
+    # mutation()
+    schema({
       field(:name, :string, index: [:exact, :term, :trigram, :fulltext]),
       field(:likes, :uid, reverse: true),
     })
@@ -80,8 +80,8 @@ defmodule DgraphEx.SchemaTest do
         }
       }
     """) ==
-    mutation()
-    |> schema(Person)
+    # mutation()
+    schema(Person)
     |> render
     |> clean_format
   end

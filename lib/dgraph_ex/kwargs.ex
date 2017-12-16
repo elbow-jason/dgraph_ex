@@ -117,28 +117,28 @@ defmodule DgraphEx.Kwargs do
     |> do_query(rest)
   end
 
-  def mutation(kwargs) when is_list(kwargs) do
-    do_mutation(%Mutation{}, kwargs)
-  end
+  # def mutation(kwargs) when is_list(kwargs) do
+  #   do_mutation(%Mutation{}, kwargs)
+  # end
 
-  def do_mutation(m, []) do
-    m
-  end
-  def do_mutation(m, [{:set, block} | rest ]) do
-    m
-    |> DgraphEx.set(block)
-    |> do_mutation(rest)
-  end
-  def do_mutation(m, [{:schema, module} | rest ]) do
-    m
-    |> DgraphEx.schema(module)
-    |> do_mutation(rest)
-  end
-  def do_mutation(m, [{:delete, item} | rest ]) do
-    m
-    |> DgraphEx.delete(item)
-    |> do_mutation(rest)
-  end
+  # def do_mutation(m, []) do
+  #   m
+  # end
+  # def do_mutation(m, [{:set, block} | rest ]) do
+  #   m
+  #   |> DgraphEx.set(block)
+  #   |> do_mutation(rest)
+  # end
+  # def do_mutation(m, [{:schema, module} | rest ]) do
+  #   m
+  #   |> DgraphEx.schema(module)
+  #   |> do_mutation(rest)
+  # end
+  # def do_mutation(m, [{:delete, item} | rest ]) do
+  #   m
+  #   |> DgraphEx.delete(item)
+  #   |> do_mutation(rest)
+  # end
 
 
 end

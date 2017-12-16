@@ -1,7 +1,7 @@
 defmodule DgraphEx do
   alias DgraphEx.{
     Query,
-    Mutation,
+    # Mutation,
     Util,
   }
 
@@ -11,9 +11,10 @@ defmodule DgraphEx do
   use DgraphEx.Expr
   use DgraphEx.Schema
 
-  use Mutation
-  use DgraphEx.Mutation.MutationSet
-  use DgraphEx.Mutation.MutationDelete
+  # use Mutation
+  use DgraphEx.Set
+  use DgraphEx.Delete
+  use DgraphEx.Alter
 
   use Query
   use Query.Var

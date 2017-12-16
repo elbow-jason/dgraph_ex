@@ -33,9 +33,7 @@ defmodule DgraphEx.Examples.Person do
       |> DgraphEx.render
 
     IO.puts("rendered: #{rendered}")
-    result =
-      rendered
-      |> DgraphEx.Client.send
+    result = DgraphEx.Client.send(body: rendered)
     
     IO.puts("result: #{inspect result}")
     result

@@ -43,15 +43,17 @@ defmodule DgraphEx.Field do
 
   defmacro __using__(_) do
     quote do
-      alias DgraphEx.{Query, Field, Mutation}
-      def field(%Mutation{sequence: [ first | rest ]} = m, subject, predicate, object, type) do
+      alias DgraphEx.{Query, Field, Set}
+      def field(%Set{} = m, subject, predicate, object, type) do
         new_field = 
           Field.new(predicate, type)
           |> Field.put_subject(subject)
           |> Field.put_object(object)
-        first = %{ first | fields: [ new_field | first.fields ] }
-        %{ m | sequence: [ first | rest ]}
+        # first = %{ first | fields: [ new_field | first.fields ] }
+        Set.put_field(m, new_field)
+        # %{ m | fields: [ first | rest ]}
       end
+
       def field(%Query{} = q, subject, predicate, object, type) do
         new_field = 
           Field.new(predicate, type)
