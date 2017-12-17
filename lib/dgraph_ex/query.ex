@@ -56,14 +56,14 @@ defmodule DgraphEx.Query do
         sequence
         |> render_sequence
         |> with_brackets
-      [ %{__struct__: module} | _ ] = sequence when module in @bracketed ->
+      [ %module{} | _ ] = sequence when module in @bracketed ->
         sequence
         |> render_sequence
         |> with_brackets
       sequence when is_list(sequence) ->
         sequence
         |> render_sequence
-      %{__struct__: module} = model ->
+      %module{} = model ->
         module.render(model)
     end
   end
@@ -72,14 +72,14 @@ defmodule DgraphEx.Query do
     Block.render(block)
   end
 
-  def render(%{__struct__: module} = model) do
+  def render(%module{} = model) do
     module.render(model)
   end
 
   defp render_sequence(sequence) do
     sequence
     |> Enum.map(fn
-      %{__struct__: module} = model -> module.render(model)
+      %module{} = model -> module.render(model)
     end)
     |> Enum.join(" ")
   end

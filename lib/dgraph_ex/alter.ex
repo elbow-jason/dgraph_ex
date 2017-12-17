@@ -5,26 +5,6 @@ defmodule DgraphEx.Alter do
     fields: []
   ]
 
-  defmacro __using__(_) do
-    quote do
-
-      def alter([%DgraphEx.Field{} | _] = fields) do
-        fields
-        |> DgraphEx.Alter.new()
-      end
-      def alter(module) do
-        if !DgraphEx.Vertex.is_model?(module) do
-          raise %ArgumentError{
-            message: "DgraphEx.alter/1 only responds to Vertex models. #{module} does not use DgraphEx.Vertex"
-          }
-        end
-        module.__vertex__(:fields)
-        |> DgraphEx.Alter.new()
-      end
-
-    end
-  end
-
   @doc """
   A static string that is the http path for altering a schema.
 
@@ -66,6 +46,7 @@ defmodule DgraphEx.Alter do
     fields
     |> Enum.map(fn field -> Field.as_schema(field) end)
     |> Enum.join("\n")
+    |> Kernel.<>("\n")
   end
 
 end

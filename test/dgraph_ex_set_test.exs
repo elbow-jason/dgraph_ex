@@ -51,20 +51,20 @@ defmodule DgraphEx.SetTest do
     """)
   end
 
-  test "render mutation schema given a model" do
-    assert clean_format("""
-      {
-        schema {
-          name: string @index(exact, terms) .
-          owner: uid @reverse .
-          location: geo @index(geo) .
-        }
-    }
-    """) ==
-    schema(Company)
-    |> render
-    |> clean_format
-  end
+  # test "render mutation schema given a model" do
+  #   assert clean_format("""
+  #     {
+  #       schema {
+  #         name: string @index(exact, terms) .
+  #         owner: uid @reverse .
+  #         location: geo @index(geo) .
+  #       }
+  #   }
+  #   """) ==
+  #   schema(Company)
+  #   |> render
+  #   |> clean_format
+  # end
 
   test "render mutation delete given (%Muation{}, uid, field_name, value)" do
     assert delete(uid("123"), :name, "Jason")

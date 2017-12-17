@@ -235,11 +235,11 @@ defmodule DgraphEx.KwargsTest do
     ])
     |> render
     |> clean_format == clean_format("""
-      mutation {
+      {
         delete {
           <1234567> * * .
           <1234567890> * * .
-        }
+      dd  }
       }
     """)
   end

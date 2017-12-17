@@ -9,7 +9,6 @@ defmodule DgraphEx.Schema do
   ]
 
   defstruct [
-    context: nil,
     fields:  [],
   ]
 
@@ -57,25 +56,17 @@ defmodule DgraphEx.Schema do
           raise_non_vertex_module(module)
         end
       end
-      def schema(%{__struct__: module}) do
+      def schema(%module{}) do
         schema(module)
       end
     end
   end
 
-
-  def render(%Schema{fields: [], context: nil}) do
+  def render(%Schema{fields: []}) do
     "schema {\n#{@naked_fields |> Enum.join("\n")}\n}"
   end
-  def render(%Schema{fields: fields, context: nil}) when length(fields) > 0 do
+  def render(%Schema{fields: fields}) when length(fields) > 0 do
     "schema(pred: [#{fields |> Enum.join(", ")}]) {\n#{@naked_fields |> Enum.join("\n")}\n}"
-  end
-  def render(%Schema{fields: fields, context: :mutation}) do
-    rendered =
-      fields
-      |> Enum.map(&Field.as_schema/1)
-      |> Enum.join("\n")
-    "schema {\n" <> rendered <> "\n}"
   end
 
 

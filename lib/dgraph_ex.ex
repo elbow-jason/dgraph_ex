@@ -9,12 +9,12 @@ defmodule DgraphEx do
   DgraphEx.Vertex.query_model()
   use DgraphEx.Field
   use DgraphEx.Expr
-  use DgraphEx.Schema
+  # use DgraphEx.Schema
 
   # use Mutation
   use DgraphEx.Set
   use DgraphEx.Delete
-  use DgraphEx.Alter
+  # use DgraphEx.Alter
 
   use Query
   use Query.Var

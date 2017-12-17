@@ -1,6 +1,8 @@
 defmodule DgraphEx.Set do
   alias DgraphEx.{Set, Field}
 
+  def path, do: "/mutate"
+
   defstruct [
     fields: []
   ]
@@ -24,10 +26,13 @@ defmodule DgraphEx.Set do
       def set() do
         %Set{}
       end
-
+  
       def set(%module{} = model) do
         check_model(model)
         set(Vertex.setter_subject(model), model)
+      end
+      def set(items) when is_list(items) do
+        DgraphEx.Kwargs.query(items)
       end
 
       def set(subject, %module{} = model) do
@@ -51,14 +56,18 @@ defmodule DgraphEx.Set do
     ""
   end
   def render(%Set{fields: fields}) when length(fields) > 0 do
-    "{ set { " <> render_fields(fields) <> " } }"
+    lines =
+      fields
+      |> render_fields(4)
+    "{\n  set {\n" <> lines <> "\n  }\n}"
   end
 
-  defp render_fields(fields) do
+  defp render_fields(fields, indent) do
     fields
     |> remove_uid
     |> Enum.map(&Field.as_setter/1)
     |> List.flatten
+    |> Enum.map(fn item -> left_pad(item, indent, " ") end)
     |> Enum.join("\n")
   end
 
@@ -72,4 +81,11 @@ defmodule DgraphEx.Set do
     x
   end
   
+  defp left_pad(item, count, padding) do
+    1..count
+    |> Enum.map(fn _ -> padding end)
+    |> Enum.join("")
+    |> Kernel.<>(item)
+  end
+
 end

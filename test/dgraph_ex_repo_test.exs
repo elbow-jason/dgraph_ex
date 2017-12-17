@@ -153,9 +153,9 @@ defmodule DgraphEx.RepoTest do
     assert {person_uid,   :_uid_,  person_uid}      in triples
   end
 
-  test "schema responds is correctly handled" do
-    resp = Repo.request DgraphEx.mutation(schema: Person)
-    assert resp == {:ok, %{"code" => "Success", "message" => "Done", "uids" => %{}}}
+  @tag alter: true
+  test "Repo.alter/1 handles Vertex module correctly" do
+    assert {:ok, %DgraphEx.Response{status: 200, code: "Success", message: "Done"}} = Repo.alter(Person)
   end
 
   test "Repo.get can get by model and _uid_" do

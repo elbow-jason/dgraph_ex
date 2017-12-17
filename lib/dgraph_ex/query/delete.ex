@@ -6,6 +6,8 @@ defmodule DgraphEx.Delete do
     fields: []
   ]
 
+  def path, do: "/query"
+
   defmacro __using__(_) do
     quote do
       alias DgraphEx.Delete
